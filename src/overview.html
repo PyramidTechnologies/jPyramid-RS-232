@@ -1,0 +1,49 @@
+<html>
+<head>Pyramid Technologies, Inc. - PTalk API Version 1.0.0.0</head>
+<body>
+<h1>Pyramid Technologies PTalk API - Version 1.0.0.0</h1>
+<p>
+This API is designed to support all of our bill validator products. This first release targets the RS-232 protocol and supports a subset of planned features
+for this interface. The default settings for this API will work with our bill validators and any other RS-232,standard compliant bill validator.<br>
+
+Currently supported commands:
+<br>
+<li><b>Polling:</b> Set the rate at which the slave is polled</li>
+<li><b>Escrow Mode:</b> Enable or disable escrow mode</li>
+<li><b>Individual Bill Enables:</b> As a master, set the individual bills to accept or reject</li>
+<li><b>COM Port Support:</b> All DB9 or USB UART COM ports supported by your OS will work with this API</li>
+<li><b>Slave Events:</b> Subscribe to all, some, or none of the slave-generated events</li>
+<li><b>Debugging:</b> Logging and debug buffer to help trace issues to their source</li>
+<li><b>Extensibility:</b> This API is designed for customization and extensions</li>
+</ul>
+<br>
+<h2>Hardware Requirements</h2>
+Some of our products support RS-232 right out of the box. See the table below for what you will need:
+<ul>
+<li><b>Apex 5000:</b>  All standard firmwares</li>
+<li><b>Apex 7000:</b>  All standard firmwares</li>
+<li><b>Trilogy:</b> <i> Requires RS-232 firmware for API revision 1.0</i></li>
+<li><b>Curve:</b> <i> Requires RS-232 firmware for API revision 1.0</i></li>
+</ul>
+<br>
+<h2>Serial Connection Requirements</h2>
+All bill validators will require a communication harness. It is recommended that you acquire one of the following before proceeding:
+<ul>    
+    <li><a href="http://shop.pyramidacceptors.com/usb-rs-232-communication-cable-harness-for-apex-05aa0023/" targe="_blank">Recommended Harness</a></li>
+    <li>DB9 RS-232 connection, USB UART cable of your choice</li>
+</ul>
+
+<h3>Roadmap</h3>
+<ul class="pti-list">
+<li>ccTalk Support</li>
+<li>Extended command set</li>
+<li>Reset Slave</li>
+<li>Status and Firmware Information</li>
+<li>Acceptor configuration reports</li>
+<li>Flash updating</li>
+<li>Auditable transaction logs</li>
+</li>
+<li>More devices??</li>
+</ul>
+</body>
+</html>
