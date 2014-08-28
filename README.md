@@ -16,4 +16,4 @@ The official Pyramid Technologies Java API
 ### Contribution guidelines ###
 
 * Contact support@pyramidacceptors.com
-* 
+
