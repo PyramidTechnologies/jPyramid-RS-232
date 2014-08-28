@@ -1411,7 +1411,7 @@ is divided into following sections:
             </propertyset>
         </ant>
     </target>
- <!-- Custom Code Timestamping using Ant's signjar instead of NetBeans --> 
+ <!-- Custom Code Timestamping using Ant's signjar instead of NetBeans 
     <target name="sign-jars" depends="-jnlp-init-keystore,-check-signing-possible" if="jnlp.signed.true+signjars.task.available"> 
         <echo message="Using custom code for signing and timestamping via build.xml..."/> 
         <signjar 
@@ -1425,5 +1425,5 @@ is divided into following sections:
                 <fileset dir="dist/lib" includes="*.jar" />                 
             </path> 
         </signjar> 
-    </target>     
+    </target>   -->  
 </project>
