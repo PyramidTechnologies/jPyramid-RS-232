@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module external.linked.project.id=":jPyramid-RS-232" external.linked.project.path="$MODULE_DIR$" external.root.project.path="$MODULE_DIR$/../Java-API-desktop-sample" external.system.id="GRADLE" external.system.module.group="jPyramid-RS-232" external.system.module.version="1.0" type="JAVA_MODULE" version="4">
-  <component name="NewModuleRootManager" inherit-compiler-output="false">
+<module external.linked.project.id="jPyramidRS-232" external.linked.project.path="$MODULE_DIR$" external.root.project.path="$MODULE_DIR$" external.system.id="GRADLE" external.system.module.group="" external.system.module.version="1.0" type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_7" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/build/classes/main" />
     <output-test url="file://$MODULE_DIR$/build/classes/test" />
-    <exclude-output />
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
@@ -17,9 +16,5 @@
     <orderEntry type="library" exported="" name="Gradle: org.scream3r:jssc:2.8.0" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.testng:testng:6.9.4" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.apache.commons:commons-collections4:4.0" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: org.beanshell:bsh:2.0b4" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: com.beust:jcommander:1.48" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: junit:junit:4.11" level="project" />
-    <orderEntry type="library" scope="TEST" name="Gradle: org.hamcrest:hamcrest-core:1.3" level="project" />
   </component>
 </module>

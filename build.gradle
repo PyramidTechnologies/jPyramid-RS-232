@@ -1,7 +1,93 @@
 apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'signing'
 
 sourceCompatibility = 1.7
 version = '1.0'
+
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
+ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
+boolean hasCredentials = hasProperty('ossrhUsername') && hasProperty('ossrhPassword')
+
+signing {
+    required { isReleaseVersion && gradle.taskGraph.hasTask("uploadArchives") }
+    sign configurations.archives
+}
+
+uploadArchives {
+    configuration = configurations.archives
+
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2/') {
+                if (hasCredentials) {
+                    authentication(userName: sonatypeUsername, password: sonatypePassword)
+                }
+            }
+
+            snapshotRepository(url: 'https://oss.sonatype.org/content/repositories/snapshots/') {
+                if (hasCredentials) {
+                    authentication(userName: sonatypeUsername, password: sonatypePassword)
+                }
+            }
+
+            pom.project {
+                name 'jPyramidRS-232'
+                packaging 'jar'
+                description 'RS-232 Bill Validator API'
+                url 'https://github.com/PyramidTechnologies/jPyramid-RS-232'
+
+                scm {
+                    url 'https://github.com/PyramidTechnologies/jPyramid-RS-232'
+                    connection 'scm:git://github.com/PyramidTechnologies/jPyramid-RS-232.git'
+                    developerConnection 'scm:git://github.com/PyramidTechnologies/jPyramid-RS-232.git'
+                }
+
+                licenses {
+                    license {
+                        name 'GNU General Public License'
+                        url 'http://www.gnu.org/license'
+                        distribution 'repo'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'corytodd'
+                        name 'Cory Todd'
+                        email 'cory@pyramidacceptors.com'
+                    }
+                }
+
+                organization {
+                    name 'Pyramid Technologies'
+                    url 'http://pyramidacceptors.com/'
+                }
+
+                issueManagement {
+                    system 'GitHub Issues'
+                    url 'https://github.com/PyramidTechnologies/jPyramid-RS-232/issues'
+                }
+
+            }
+        }
+    }
+}
 
 repositories {
     mavenCentral()
