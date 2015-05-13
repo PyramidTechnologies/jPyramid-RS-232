@@ -30,7 +30,7 @@ import java.util.EnumSet;
 /**
  * Raised when the slave enters the Accepting state.<br>
  * {@link Events#Accepting}
- * @author Cory Todd <cory@pyramidacceptors.com>
+ * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
  */
 public class AcceptingEvent extends PTalkEvent {
     private static final long serialVersionUID = 1L;

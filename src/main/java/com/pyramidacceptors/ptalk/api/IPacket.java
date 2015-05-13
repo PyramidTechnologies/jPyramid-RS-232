@@ -32,7 +32,7 @@ import java.util.EnumSet;
  * Packet is a data structure that represents a serial byte stream. Packets <br>
  * have functions that include validation, packaging, and parsing.
  * 
- * @author Cory Todd <cory@pyramidacceptors.com>
+ * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
  */
 interface IPacket {
     

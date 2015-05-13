@@ -29,7 +29,7 @@ import java.util.EnumSet;
 /**
  * Raised when slave raises a Credit event<br>
  * {@link Events#Credit}
- * @author Cory Todd <cory@pyramidacceptors.com>
+ * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
  */
 public class CreditEvent extends PTalkEvent {
     private static final long serialVersionUID = 1L;

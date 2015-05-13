@@ -27,7 +27,7 @@ import org.apache.commons.collections4.queue.CircularFifoQueue;
  * appropriate routines the protocol requires.
  * 
  * <a href="http://www.pyramidacceptors.com/files/RS_232.pdf">RS-232 Spec.</a>
- * @author Cory Todd <cory@pyramidacceptors.com>
+ * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
  * @since 1.0.0.0
  */
 final class RS232Socket implements ISocket {

@@ -29,7 +29,7 @@ import java.util.EnumSet;
 /**
  * Raised when slave raises an Invalid Message event<br>
  * {@link Events#InvalidCommand}
- * @author Cory Todd <cory@pyramidacceptors.com>
+ * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
  */
 public class InvalidMessageEvent extends PTalkEvent {
     private static final long serialVersionUID = 1L;

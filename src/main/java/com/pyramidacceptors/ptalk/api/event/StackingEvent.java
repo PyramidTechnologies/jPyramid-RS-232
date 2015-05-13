@@ -29,7 +29,7 @@ import java.util.EnumSet;
 /**
  * Raised by slave when it enters the stacking state<br>
  * {@link Events#Stacking}
- * @author Cory Todd <cory@pyramidacceptors.com>
+ * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
  */
 public class StackingEvent extends PTalkEvent {
     private static final long serialVersionUID = 1L;

@@ -23,24 +23,24 @@ package com.pyramidacceptors.ptalk.api.event;
  * Date: 15-07-2014 
  */
 /**
- * The bill acceptor will pass through a series of “States” during bill 
- * processing. The acceptor will always be in a “ State.” If the acceptor
- * is waiting for a bill insertion, it will report an “Idle” state to the
+ * The bill acceptor will pass through a series of "States" during bill 
+ * processing. The acceptor will always be in a " State." If the acceptor
+ * is waiting for a bill insertion, it will report an "Idle" state to the
  * master. If the acceptor is reading a bill , i t will b e reporting
- * an “Accepting” state to the master. Only one state can be set at a 
- * time. The acceptor m a y also have a reported “Event” taking place.
+ * an "Accepting" state to the master. Only one state can be set at a 
+ * time. The acceptor m a y also have a reported "Event" taking place.
  * For example, if the acceptor has just stacked a bill in the
- * “Stacking Mechanism”, it will report a “Stacked” event and since it
+ * "Stacking Mechanism", it will report a "Stacked" event and since it
  * is now waiting for another bill insertion, it will also report an
- * “Idle” state within the same message. It is possible for a multiple
+ * "Idle" state within the same message. It is possible for a multiple
  * event to be set in a message. Events are temporary. For example, when
  * a message sent by the acceptor has been received by the master and a
  * new message is then sent by the master, with a new MSG/ack number,
  * the acceptor should clear the  previous event bit that is set when
  * it sends its next response.
- * <img src="../../../../../doc-files/StatesVEvents.png"></img>
+ * <img src="../../../../../doc-files/StatesVEvents.png" alt="RS-232 State Machine">
  * 
- * @author Cory Todd <cory@pyramidacceptors.com>
+ * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
  * @since 1.0.0.0
  */
 public enum Events {
@@ -62,11 +62,11 @@ public enum Events {
     Accepting(2),
     /**
      * The bill is valid and in sitting inside the bill acceptor. 
-     * The “Escrow State” reports the bill value field and will indicate
+     * The "Escrow State" reports the bill value field and will indicate
      * the denomination of the bill. If the bill is invalid, the state
      * of escrow would never be reported. When the acceptor first powers
      * up and a bill is found to be in escrow, the acceptor would report
-     * in an escrow state with the “Bill Value Field” set to 000
+     * in an escrow state with the "Bill Value Field" set to 000
      * (unknown value). The master would then send a return message
      * to the acceptor. The acceptor finishes with a returned event,
      * then it goes back to the idle state.
@@ -92,7 +92,7 @@ public enum Events {
      * This state is set for the purpose of returning a bill to the
      * patron. The master orders the bill to be returned because it
      * responded to an Escrowed message and did not want to accept this
-     * bill. A “Returning” message and a “Rejected” message are quite
+     * bill. A "Returning" message and a "Rejected" message are quite
      * different. A returning message means that the master did not want
      * the acceptor to take a particular bill of valid currency. A
      * rejected message is sent because the acceptor found the bill

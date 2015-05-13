@@ -23,7 +23,7 @@ import jssc.SerialPortException;
  * A PyramidDeviceException is thrown by any method that encounters as<br>
  * exceptional circumstance while interacting with device. <br>
  * <br>
- * @author Cory Todd <cory@pyramidacceptors.com>
+ * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
  * @since 1.0.0.0
  */
 public class PyramidDeviceException extends SerialPortException {

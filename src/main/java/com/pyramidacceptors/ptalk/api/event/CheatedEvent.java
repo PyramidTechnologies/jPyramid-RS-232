@@ -29,7 +29,7 @@ import java.util.EnumSet;
 /**
  * Raised by slave when it detects a cheating attempt<br>
  * {@link Events#Cheated}
- * @author Cory Todd <cory@pyramidacceptors.com>
+ * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
  */
 public class CheatedEvent extends PTalkEvent {
     private static final long serialVersionUID = 1L;

@@ -30,7 +30,7 @@ import java.util.EnumSet;
 /**
  * Raised when slave signals a returned event<br>
  * {@link Events#Returned}
- * @author Cory Todd <cory@pyramidacceptors.com>
+ * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
  */
 public class ReturnedEvent extends PTalkEvent {
     private static final long serialVersionUID = 1L;

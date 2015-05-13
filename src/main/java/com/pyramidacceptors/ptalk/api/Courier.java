@@ -31,7 +31,7 @@ import jssc.SerialPortTimeoutException;
  * that use a polling logic. e.g. ccTalk or RS-232<br>
  * Courier is threadsafe.
  * <br>
- * @author Cory Todd <cory@pyramidacceptors.com>
+ * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
  * @since 1.0.0.0
  */
 final class Courier extends Thread {

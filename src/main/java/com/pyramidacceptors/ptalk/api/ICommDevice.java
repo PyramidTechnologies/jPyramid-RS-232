@@ -26,7 +26,7 @@ package com.pyramidacceptors.ptalk.api;
  * In the future, we will implement this interface in order to support <br>
  * printers, other acceptors, and any other device requiring serial <br>
  * communication.<br>
- * @author Cory Todd <cory@pyramidacceptors.com>
+ * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
  * @since 1.0.0.0
  */
 interface ICommDevice {
@@ -71,7 +71,8 @@ interface ICommDevice {
      * After creating a new ICommDevice, disconnect() will attempt<br>
      * to close and flush the underlying serial port<br>
      * <br>
-     * @throws com.pyramidacceptors.ptalk.api.PyramidDeviceException
+      * @throws com.pyramidacceptors.ptalk.api.PyramidDeviceException thrown if underlying port
+      * cannot be opened.
      */
     public void disconnect() throws PyramidDeviceException;
     
@@ -79,8 +80,9 @@ interface ICommDevice {
     /** @TODO Implement a status enumeration   <br>
      * Query the status of the attached ICommDevice<br>
      * <br>
-     * @throws com.pyramidacceptors.ptalk.api.PyramidDeviceException
-     */    
+     * @throws com.pyramidacceptors.ptalk.api.PyramidDeviceException thrown if underlying port
+     * cannot be opened.
+     */
     //public void getStatus() throws PyramidDeviceException;
     
     /**

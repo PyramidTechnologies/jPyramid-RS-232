@@ -28,7 +28,7 @@ import java.util.logging.Logger;
  * The Pyramid Acceptor class is the realization of an {@code ICommDevice}.<br>
  * It uses a RS-232 socket by default.<br>
  * <br>
- * @author Cory Todd <cory@pyramidacceptors.com>
+ * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
  * @since 1.0.0.0
  */
 public class PyramidAcceptor implements ICommDevice, PTalkEventListener {
@@ -63,7 +63,8 @@ public class PyramidAcceptor implements ICommDevice, PTalkEventListener {
      * <br>
      * @param portName OS string name of the port this is connected to
      * @return New instance of PyramidAcceptor
-     * @throws com.pyramidacceptors.ptalk.api.PyramidDeviceException
+     * @throws com.pyramidacceptors.ptalk.api.PyramidDeviceException thrown if underlying port
+     * cannot be opened.
      */
     public static PyramidAcceptor valueOfRS232(String portName) throws PyramidDeviceException {
         return new PyramidAcceptor(new PyramidPort.PortBuilder(portName).build(),
@@ -75,14 +76,15 @@ public class PyramidAcceptor implements ICommDevice, PTalkEventListener {
      * instance of PyramidPort will still use the standard RS-232 packet unless
      * otherwise specified.
      * 
-     * @param config
-     * @param portName
-     * @param baudRate
-     * @param databits
-     * @param stopbits
-     * @param parity
+     * @param config Configuration to use
+     * @param portName OS name of port
+     * @param baudRate integer baud rate
+     * @param databits number of bits per unit of data
+     * @param stopbits bits to indicate end of data
+     * @param parity type of parity
      * @return new instance of PyramidAcceptor
-     * @throws com.pyramidacceptors.ptalk.api.PyramidDeviceException
+     * @throws com.pyramidacceptors.ptalk.api.PyramidDeviceException thrown if underlying port
+     * cannot be opened.
      */
     public static PyramidAcceptor valueOfRS232(IConfiguration config, String portName, int baudRate, 
             int databits, int stopbits, int parity) throws PyramidDeviceException {
@@ -96,7 +98,8 @@ public class PyramidAcceptor implements ICommDevice, PTalkEventListener {
      * Attempt to autodetect the connected slave and use a default RS-232<br>
      * configuration.
      * @return a new instance of PyramidAcceptor
-     * @throws PyramidDeviceException if there are issues with the serial port
+     * @throws com.pyramidacceptors.ptalk.api.PyramidDeviceException thrown if underlying port
+     * cannot be opened.
      */
     public static PyramidAcceptor valueOfRS232() throws PyramidDeviceException {
         String portName = PortScanner.find();
@@ -116,7 +119,7 @@ public class PyramidAcceptor implements ICommDevice, PTalkEventListener {
      * @see com.pyramidacceptors.ptalk.api.IConfiguration
      * @see com.pyramidacceptors.ptalk.api.RS232Configuration
      * <br>
-     * @param l PTalkEventListener
+     * @param l PTalkEventListener subscriber object
      */
     public void addChangeListener(PTalkEventListener l) {
       this.listeners.add(l);

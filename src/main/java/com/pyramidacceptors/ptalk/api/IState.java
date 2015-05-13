@@ -28,7 +28,7 @@ package com.pyramidacceptors.ptalk.api;
  * events, errors, or state changes on the slave device. States should be <br>
  * implemented as an enum and embedded in the IConfiguration implementation.
  * 
- * @author Cory Todd <cory@pyramidacceptors.com>
+ * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
  * @since 1.0.0.0
  */
 public interface IState { }

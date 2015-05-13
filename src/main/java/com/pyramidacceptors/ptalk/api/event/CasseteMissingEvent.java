@@ -29,7 +29,7 @@ import java.util.EnumSet;
 /**
  * Raised when slave raises a Cassette Missing event<br>
  * {@link Events#BillCasetteRemoved}
- * @author Cory Todd <cory@pyramidacceptors.com>
+ * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
  */
 public class CasseteMissingEvent extends PTalkEvent {
     private static final long serialVersionUID = 1L;

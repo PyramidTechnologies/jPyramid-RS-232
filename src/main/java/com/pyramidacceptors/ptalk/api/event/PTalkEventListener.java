@@ -24,14 +24,14 @@ package com.pyramidacceptors.ptalk.api.event;
  * <br>
  * @see PTalkEvent
  * @see Events
- * @author Cory Todd <cory@pyramidacceptors.com>
+ * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
  * @since 1.0.0.0
  */
 public interface PTalkEventListener {
     /**
      * Triggered when the event origin achieves an event
      * <br>
-     * @param evt 
+     * @param evt event to push to listeners
      */
     public abstract void changeEventReceived(PTalkEvent evt);
 

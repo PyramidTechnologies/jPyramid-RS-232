@@ -29,7 +29,7 @@ package com.pyramidacceptors.ptalk.api;
  * to all configuration implementations. This would include settings<br>
  * such as bill enabled or disabled or what events to listen for.
  * 
- * @author Cory Todd <cory@pyramidacceptors.com>
+ * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
  */
 public interface IConfiguration {
 
@@ -53,7 +53,7 @@ public interface IConfiguration {
      * features via a bit mask. This implementation supports an integer mask <br>
      * where 1 indicates the feature is enabled and 0 indicates that it is<br>
      * disabled.
-     * @param mask 
+     * @param mask bitwise enable/disable mask. Set bit position to 1 to enable, 0 to disable.
      */
     public void setEnableMask(int mask);
 

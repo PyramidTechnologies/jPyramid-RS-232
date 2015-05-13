@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * RS-232 states, events and errors as defined in the 
  * <a href="http://www.pyramidacceptors.com/files/RS_232.pdf">RS-232 Spec.</a><br> 
  * <br> 
- * @author Cory Todd <cory@pyramidacceptors.com>
+ * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
  * @since 1.0.0.0
  */
 public enum RS232Configuration implements IConfiguration {
@@ -101,20 +101,20 @@ public enum RS232Configuration implements IConfiguration {
     }    
     
     /**
-     * The bill acceptor will pass through a series of “States” during bill <br>
-     * processing. The acceptor will always be in a “ State.” If the acceptor<br>
-     * is waiting for a bill insertion, it will report an “Idle” state to the<br>
-     * master. If the acceptor is readin g a bill , i t will b e reporting<br>
-     * an “Accepting” state to the master. Only one state can be set at a <br>
-     * time. T he acc e ptor m a y also have a reported “Event” taking place.<br>
+     * The bill acceptor will pass through a series of "States" during bill <br>
+     * processing. The acceptor will always be in a "State." If the acceptor<br>
+     * is waiting for a bill insertion, it will report an "Idle" state to the<br>
+     * master. If the acceptor is reading a bill , it will be reporting<br>
+     * an "Accepting" state to the master. Only one state can be set at a <br>
+     * time. The acceptor may also have a reported "Event" taking place.<br>
      * For example, if the acceptor has just stacked a bill in the<br>
-     * “Stacking Mechanism”, it will report a “Stacked” event and since it<br>
-     * is now waiting for another bill in sertio n, it wil l also report an<br>
-     * “Idle” state within the same message. It is possible for a multiple<br>
-     * event to be set in a message. Events are temporary. For example, when<br>
+     * "Stacking Mechanism", it will report a "Stacked" event and since it<br>
+     * is now waiting for another bill insertion, it will also report an<br>
+     * "Idle" state within the same message. It is possible for multiple<br>
+     * events to be set in a message. Events are temporary. For example, when<br>
      * a message sent by the acceptor has been received by the master and a<br>
      * new message is then sent by the master, with a new MSG/ack number,<br>
-     * the acceptor should c lear th e previo us event bit that is set when<br>
+     * the acceptor should clear the previous event bit that is set when<br>
      * it sends its next response.    
      */
     public enum RS232State implements IState {    
@@ -141,11 +141,11 @@ public enum RS232Configuration implements IConfiguration {
         Accepting,
         /**
          * The bill is valid and in sitting inside the bill acceptor. <br>
-         * The “Escrow State” reports the bill value field and will indicate<br>
+         * The "Escrow State" reports the bill value field and will indicate<br>
          * the denomination of the bill. If the bill is invalid, the state<br>
          * of escrow would never be reported. When the acceptor first powers<br>
          * up and a bill is found to be in escrow, the acceptor would report<br>
-         * in an escrow state with the “Bill Value Field” set to 000<br>
+         * in an escrow state with the "Bill Value Field" set to 000<br>
          * (unknown value). The master would then send a return message<br>
          * to the acceptor. The acceptor finishes with a returned event,<br>
          * then it goes back to the idle state.
@@ -165,7 +165,7 @@ public enum RS232Configuration implements IConfiguration {
          * This state is set for the purpose of returning a bill to the<br>
          * patron. The master orders the bill to be returned because it<br>
          * responded to an Escrowed message and did not want to accept this<br>
-         * bill. A “Returning” message and a “Rejected” message are quit<br>
+         * bill. A "Returning" message and a "Rejected" message are quit<br>
          * different. A returning message means that the master did not want<br>
          * the acceptor to take a particular bill of valid currency. A<br>
          * rejected message is sent because the acceptor found the bill<br>

@@ -29,7 +29,7 @@ import java.util.EnumSet;
 /**
  * Raised when slave enters the Escrowed state<br>
  * {@link Events#Escrowed}
- * @author Cory Todd <cory@pyramidacceptors.com>
+ * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
  */
 public class EscrowedEvent extends PTalkEvent {    
     private static final long serialVersionUID = 1L;

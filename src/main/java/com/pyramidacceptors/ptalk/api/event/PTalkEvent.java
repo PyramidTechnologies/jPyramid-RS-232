@@ -27,7 +27,7 @@ import java.util.EventObject;
  * Please see {@link Events} for more information.
  * <br>
  * Extend this class to create your events.<br>
- * @author Cory Todd <cory@pyramidacceptors.com>
+ * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
  * @since 1.0.0.0
  */
 public class PTalkEvent extends EventObject {

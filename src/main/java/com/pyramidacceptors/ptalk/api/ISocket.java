@@ -27,7 +27,7 @@ import com.pyramidacceptors.ptalk.api.event.PTalkEvent;
  * In the future this will be implemented for other interfaces such as<br>
  * ccTalk.<br>
  * <br>
- * @author Cory Todd <cory@pyramidacceptors.com>
+ * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
  * @see com.pyramidacceptors.ptalk.api.PyramidPort
  * @see com.pyramidacceptors.ptalk.api.ICommDevice
  * @since 1.0.0.0

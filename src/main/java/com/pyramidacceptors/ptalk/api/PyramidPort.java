@@ -32,7 +32,7 @@ import jssc.SerialPortTimeoutException;
  * configured for pyramid devices and protocols.<br>
  * <br>
  * @see jssc.SerialPort
- * @author Cory Todd <cory@pyramidacceptors.com>
+ * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
  * @since 1.0.0.0
  */
 final public class PyramidPort {
@@ -51,7 +51,7 @@ final public class PyramidPort {
      * Be sure to call .build() once you have called all configuration <br>
      * parameters.<br>
      * <br>
-     * @author Cory Todd <cory@pyramidacceptors.com>
+     * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
      * @since 1.0.0.0
      */
      static class PortBuilder {

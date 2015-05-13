@@ -40,7 +40,7 @@ import java.util.logging.Logger;
  * Represents a command or response packet for the RS232 bill validation<br>
  * interface.
  * 
- * @author Cory Todd <cory@pyramidacceptors.com>
+ * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
  */
 final class RS232Packet implements IPacket{
     

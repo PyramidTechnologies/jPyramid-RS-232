@@ -21,7 +21,7 @@ package com.pyramidacceptors.ptalk.api;
  * Provides constant strings and enumerations used for API transactions<br>
  * between client code and the {@code ICommDevice}
  * <br>
- * @author Cory Todd <cory@pyramidacceptors.com>
+ * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
  * @since 1.0.0.0
  */
 public class APIConstants {
@@ -99,7 +99,7 @@ public class APIConstants {
     * API Level assists in detecting how to talk to the target
     * {@code ICommDevice}
     * <br>
-    * @author Cory Todd <cory@pyramidacceptors.com>
+    * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
     * @since 1.0.0.0
     */
    public enum APILevel {
@@ -117,7 +117,7 @@ public class APIConstants {
     * Enumerated bill directions specifically for a bill validator
     * type {@code ICommDevice}<br>
     * <br>
-    * @author Cory Todd <cory@pyramidacceptors.com>
+    * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
     * @since 1.0.0.0
     */
    public enum BillDirection {
@@ -174,7 +174,7 @@ public class APIConstants {
     * Pyramid designates up to twelve(12) slots for notes. <br>
     * RS-232 supports ONLY 7 notes.
     * <br>
-    * @author Cory Todd <cory@pyramidacceptors.com>
+    * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
     * @since 1.0.0.0
     */
    public enum BillNames {

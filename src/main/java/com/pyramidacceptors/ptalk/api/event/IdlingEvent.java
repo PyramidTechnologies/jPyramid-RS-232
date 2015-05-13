@@ -29,7 +29,7 @@ import java.util.EnumSet;
 /**
  * Raised when slave enters the idling state<br>
  * {@link Events#Idling}
- * @author Cory Todd <cory@pyramidacceptors.com>
+ * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
  */
 public class IdlingEvent extends PTalkEvent {
     private static final long serialVersionUID = 1L;
