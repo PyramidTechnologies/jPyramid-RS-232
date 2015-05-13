@@ -41,7 +41,7 @@ public interface ISocket {
      * <br>
      * @return byte[] form of message intended for slave
      */
-    public byte[] generateCommand();
+    byte[] generateCommand();
     
     /**
      * Parse the message according to the protocol and set the <br>
@@ -52,7 +52,7 @@ public interface ISocket {
      * @param bytes byte array response to parse
      * @return new PTalkEvent packed with parsed response data
      */
-    public PTalkEvent parseResponse(byte[] bytes);
+    PTalkEvent parseResponse(byte[] bytes);
     
     
     /**
@@ -62,7 +62,7 @@ public interface ISocket {
      * <br>
      * @return Integer Maximum packet size
      */
-    public int getMaxPacketRespSize();  
+    int getMaxPacketRespSize();
     
     
 //    /**

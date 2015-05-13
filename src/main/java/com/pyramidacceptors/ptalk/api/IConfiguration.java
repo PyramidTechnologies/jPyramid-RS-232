@@ -46,7 +46,7 @@ public interface IConfiguration {
     /**     
      * @return  the current event mask
      */
-    public int getEventMask();
+    int getEventMask();
     
     /**
      * Serial Protocol often allow for the enable/disable of bills or other <br>
@@ -55,16 +55,16 @@ public interface IConfiguration {
      * disabled.
      * @param mask bitwise enable/disable mask. Set bit position to 1 to enable, 0 to disable.
      */
-    public void setEnableMask(int mask);
+    void setEnableMask(int mask);
 
     /**
      * Enable or disable the slave device if the protocol supports it.
      * @param enable true will enable the device, false will disable
      */
-    public void setEnabled(boolean enable);
+    void setEnabled(boolean enable);
     
     /**    
      * @return true if the device is enabled, otherwise false
      */
-    public boolean getEnabled();
+    boolean getEnabled();
 }

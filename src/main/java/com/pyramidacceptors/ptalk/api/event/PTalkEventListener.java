@@ -33,6 +33,6 @@ public interface PTalkEventListener {
      * <br>
      * @param evt event to push to listeners
      */
-    public abstract void changeEventReceived(PTalkEvent evt);
+    void changeEventReceived(PTalkEvent evt);
 
 }

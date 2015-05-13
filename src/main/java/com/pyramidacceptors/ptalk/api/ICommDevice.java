@@ -37,7 +37,7 @@ interface ICommDevice {
      * 
      * @return the poll rate in milliseconds
      */
-    public int getPollRate();
+    int getPollRate();
     
     /**
      * Set the poll rate for the given device. If the value is illegal, a<br>
@@ -47,7 +47,7 @@ interface ICommDevice {
      * @param rate time in milliseconds at which polling will occur
      * @return boolean true is successful, false otherwise
      */
-    public boolean setPollRate(int rate);
+    boolean setPollRate(int rate);
     
     
     /**
@@ -55,7 +55,7 @@ interface ICommDevice {
      * port is open and the courier is running communications. True does not <br>
      * imply that all systems are operational.     
      */
-    public boolean isConnected();
+    boolean isConnected();
     
     /**
      * After creating a new ICommDevice, connect() will attempt<br>
@@ -65,7 +65,7 @@ interface ICommDevice {
      * @throws PyramidDeviceException if the port configuration is wrong for<br>
      * the selected device.
      */
-    public void connect() throws PyramidDeviceException;
+    void connect() throws PyramidDeviceException;
     
      /**
      * After creating a new ICommDevice, disconnect() will attempt<br>
@@ -74,7 +74,7 @@ interface ICommDevice {
       * @throws com.pyramidacceptors.ptalk.api.PyramidDeviceException thrown if underlying port
       * cannot be opened.
      */
-    public void disconnect() throws PyramidDeviceException;
+     void disconnect() throws PyramidDeviceException;
     
     
     /** @TODO Implement a status enumeration   <br>
@@ -90,6 +90,6 @@ interface ICommDevice {
      * <br>
      * @return String name of port<br>
      * e.g. COM1 or /dev/term
-     */   
-    public String getPortName();
+     */
+    String getPortName();
 }
