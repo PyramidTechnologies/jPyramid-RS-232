@@ -3,3 +3,5 @@
 nbproject/private/
 production/
 .jacocoverage/
+.gradle/
+.idea/
