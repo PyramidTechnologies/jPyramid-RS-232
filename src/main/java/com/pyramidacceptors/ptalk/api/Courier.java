@@ -54,7 +54,7 @@ final class Courier extends Thread {
      * <br>
      * @param port to deliver on and listen to
      * @param pollRate delay between polls
-     * @param packetType type of packet that will be handled
+     * @param socket type of packet that will be handled
      */
     Courier(PyramidPort port, int pollRate, ISocket socket) {
         this.port = port;
@@ -87,7 +87,6 @@ final class Courier extends Thread {
     /**
      * Remove all subscriptions to this event.<br>
      * <br>
-     * @param l PyramidSerialEventListener
      */
     public void removeChangeListeners() {
       this.listeners.clear();
