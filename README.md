@@ -1,3 +1,6 @@
+[![Maven](https://img.shields.io/badge/maven-v1.1-blue.svg)](http://search.maven.org/#search%7Cga%7C1%7Ccom.pyramidacceptors)
+
+
 Overview
 --------
 
