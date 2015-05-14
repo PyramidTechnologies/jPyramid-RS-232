@@ -1,4 +1,4 @@
-[![Maven](https://img.shields.io/badge/maven-v1.1-blue.svg)](http://search.maven.org/#search%7Cga%7C1%7Ccom.pyramidacceptors)
+[![Maven](https://maven-badges.herokuapp.com/maven-central/com.pyramidacceptors/jPyramid-RS-232/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.pyramidacceptors/jPyramid-RS-232)
 
 
 Overview
