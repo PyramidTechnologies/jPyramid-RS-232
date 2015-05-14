@@ -1,19 +1,31 @@
-# README #
+Overview
+--------
 
-The official Pyramid Technologies Java API
+This library is for OEMs and software developers looking to quickly and easily integrate an RS-232 bill validator
+into their system. Get up and running quickly without having to worry about the low-level bit twiddling.
 
-### Java Pyramid Device API###
+## Java Pyramid Device API
 
-* Cross-platform, RS-232 compatible API
-* Version 1.0.0.0
+* Cross-platform, RS-232 Bill Validator API
+* Supports Escrow Mode
+* Highly Configurable
+* Very lightweight library (small jar and low memory consumption)
 
-### How do I get set up? ###
+### Use with Gradle ###
 
-* Download the library
-* Get inspired 
-* Write your code
+    dependencies {
+        compile 'com.pyramidacceptors:jPyramid-RS-232:1.1'
+    }
+    
+    
+### Or Pick Your Maven Toolset ###
+
+[Maven Central](http://search.maven.org/#artifactdetails%7Ccom.pyramidacceptors%7CjPyramid-RS-232%7C1.1%7Cjar)
+
+### License ###
+
+[This library is available under GNU General Public Use, V2](http://www.gnu.org/licenses/gpl-2.0.html)
 
 ### Contribution guidelines ###
 
-* Contact support@pyramidacceptors.com
-
+We warmly welcome pull requests, feature requests, and any other feedback you are willing to offer.
