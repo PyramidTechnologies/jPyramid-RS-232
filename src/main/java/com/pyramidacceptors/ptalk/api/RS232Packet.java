@@ -163,7 +163,7 @@ final class RS232Packet implements IPacket{
             // Don't modify the data to send (nextMsg)
             message = "Acceptor Bus/Not Connected";
           
-        } else if((data.size() == 11) || isValid()) {
+        } else if((data.size() == 11) && isValid()) {
             
             // Message looks good, next one will toggle the ack
             config.toggleAck();
