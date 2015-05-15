@@ -45,7 +45,7 @@ import java.util.logging.Logger;
 final class RS232Packet implements IPacket{
     
     private final List<Byte> data = new ArrayList<>();    
-    private final EnumSet<Events> event = EnumSet.of(Events.Idling);
+    private final EnumSet<Events> event = EnumSet.noneOf(Events.class);
     
     private CreditActions creditAction = NONE;
     private String message = "";
@@ -163,7 +163,7 @@ final class RS232Packet implements IPacket{
             // Don't modify the data to send (nextMsg)
             message = "Acceptor Bus/Not Connected";
           
-        } else if((data.size() == 11) || isValid()) {
+        } else if((data.size() == 11) && isValid()) {
             
             // Message looks good, next one will toggle the ack
             config.toggleAck();
