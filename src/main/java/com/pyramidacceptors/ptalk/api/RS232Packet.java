@@ -45,7 +45,7 @@ import java.util.logging.Logger;
 final class RS232Packet implements IPacket{
     
     private final List<Byte> data = new ArrayList<>();    
-    private final EnumSet<Events> event = EnumSet.of(Events.Idling);
+    private final EnumSet<Events> event = EnumSet.noneOf(Events.class);
     
     private CreditActions creditAction = NONE;
     private String message = "";

@@ -1,7 +1,10 @@
 package com.pyramidacceptors.ptalk.api;
 
+import static com.pyramidacceptors.ptalk.api.event.Events.*;
+import com.pyramidacceptors.ptalk.api.event.PTalkEvent;
 import org.junit.Test;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
 /**
@@ -21,6 +24,10 @@ public class RS232SocketTest {
         RS232Socket socket;
 
         byte[] actual, expected;
+
+        // If another test ran before this toggled our ACK, be sure to clear it
+        if(RS232Configuration.INSTANCE.getAck())
+            RS232Configuration.INSTANCE.toggleAck();
 
         // On startup, non-escrow mode, the first slave message should always be
         socket = new RS232Socket();
@@ -97,7 +104,22 @@ public class RS232SocketTest {
      */
     @Test
     public void testParseResponse() throws Exception {
+        PTalkEvent event;
+        byte[] parseThis;
 
+        parseThis = new byte[] {0x02, 0x0B, 0x20, 0x01, 0x10, 0x00, 0x00, 0x00, 0x00, 0x03, 0x3A};
+        event = new RS232Socket().parseResponse(parseThis);
+
+        // There should only be 1 event and it should be Idling
+        assertThat(true, is(event.getEventId().contains(Idling)));
+        assertThat(1, is(event.getEventId().size()));
+
+        parseThis = new byte[] {0x02, 0x0B, 0x20, 0x02, 0x10, 0x00, 0x00, 0x00, 0x00, 0x03, 0x39};
+        event = new RS232Socket().parseResponse(parseThis);
+
+        // There should only be 1 event and it should be Accepting
+        assertThat(true, is(event.getEventId().contains(Accepting)));
+        assertThat(1, is(event.getEventId().size()));
     }
 
     /**
@@ -108,6 +130,6 @@ public class RS232SocketTest {
     @Test
     public void testGetMaxPacketRespSize() throws Exception {
         RS232Socket socket = new RS232Socket();
-        assertEquals(11, socket.getMaxPacketRespSize());
+        assertThat(11, is(socket.getMaxPacketRespSize()));
     }
 }
