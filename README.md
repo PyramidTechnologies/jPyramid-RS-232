@@ -1,3 +1,5 @@
+[![Maven](https://maven-badges.herokuapp.com/maven-central/com.pyramidacceptors/jPyramid-RS-232/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.pyramidacceptors/jPyramid-RS-232) [![Build Status](https://travis-ci.org/PyramidTechnologies/jPyramid-RS-232.svg?branch=develop)](https://travis-ci.org/PyramidTechnologies/jPyramid-RS-232)
+
 Overview
 --------
 
