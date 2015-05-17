@@ -57,9 +57,12 @@ final class RS232Packet implements IPacket{
     
     /**
      * Create a new RS232 packet initialized with the byte array {@code bytes}
-     * @param bytes 
+     * @param bytes
+     * @throws IllegalAccessException when bytes is null
      */
     RS232Packet(byte[] bytes) {
+        if(!(bytes instanceof byte[]))
+            throw new IllegalArgumentException("bytes must not be null");
         for(byte b : bytes)
             data.add(b);
     }
@@ -68,7 +71,10 @@ final class RS232Packet implements IPacket{
      * {@inheritDoc}
      */
     @Override
-    public boolean isValid() {        
+    public boolean isValid() {
+        if(data.size() != 11)
+            return false;
+
         byte checksum = (byte)(data.get(1) ^ data.get(2));
         for(int i=3;i<9;i++) {
             checksum ^= data.get(i);
@@ -105,6 +111,7 @@ final class RS232Packet implements IPacket{
     
     /**
      * {@inheritDoc}
+     * @throws IndexOutOfBoundsException if index is outside packet bounds
      */    
     @Override
     public byte get(int index) {
@@ -129,7 +136,7 @@ final class RS232Packet implements IPacket{
      */    
     @Override
     public boolean replace(int index, byte b) {
-        if(index > (this.data.size()-1))
+        if(index < 0 || index > (this.data.size()-1))
             return false;
         this.data.set(index, b);
         return true;
@@ -352,9 +359,11 @@ final class RS232Packet implements IPacket{
         }
         StringBuilder sb = new StringBuilder();
         for (Byte b : l) {
-            sb.append(b).append(" ");
+            sb.append(String.format(", 0x%02X", b));
         }
-        return sb.toString();
+        String result = sb.toString();
+        // We don't want that leading comma
+        return result.substring(1, result.length()).trim();
     }
 
 }

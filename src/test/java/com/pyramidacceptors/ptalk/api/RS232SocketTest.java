@@ -2,13 +2,10 @@ package com.pyramidacceptors.ptalk.api;
 
 import static com.pyramidacceptors.ptalk.api.event.Events.*;
 
-import com.pyramidacceptors.ptalk.api.event.CasseteMissingEvent;
 import com.pyramidacceptors.ptalk.api.event.Events;
-import com.pyramidacceptors.ptalk.api.event.FailureEvent;
 import com.pyramidacceptors.ptalk.api.event.PTalkEvent;
 import org.junit.Test;
 
-import java.util.EnumSet;
 import java.util.HashMap;
 
 import static org.hamcrest.CoreMatchers.is;
