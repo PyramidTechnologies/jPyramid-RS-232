@@ -17,7 +17,6 @@
 
 package com.pyramidacceptors.ptalk.api;
 
-import com.pyramidacceptors.ptalk.api.APIConstants.BillNames;
 import com.pyramidacceptors.ptalk.api.RS232Socket.CreditActions;
 import com.pyramidacceptors.ptalk.api.event.Events;
 import java.util.EnumSet;

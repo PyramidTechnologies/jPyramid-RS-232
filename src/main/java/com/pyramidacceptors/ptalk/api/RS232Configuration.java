@@ -71,10 +71,10 @@ public enum RS232Configuration implements IConfiguration {
     /**
      * {@inheritDoc} 
      */    
-    //@Override
-    //public void setEventMask(int mask) {
-    //   this._evMask = mask;
-    //}
+    @Override
+    public void setEventMask(int mask) {
+       this._evMask = mask;
+    }
 
     /**
      * {@inheritDoc} 

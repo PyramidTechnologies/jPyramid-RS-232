@@ -41,7 +41,7 @@ public interface IConfiguration {
      * inactive.
      * @param mask 
      */
-    //public void setEventMask(int mask);
+    void setEventMask(int mask);
     
     /**     
      * @return  the current event mask
