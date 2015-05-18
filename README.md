@@ -16,7 +16,7 @@ into their system. Get up and running quickly without having to worry about the 
 ### Use with Gradle ###
 
     dependencies {
-        compile 'com.pyramidacceptors:jPyramid-RS-232:1.2.0'
+        compile 'com.pyramidacceptors:jPyramid-RS-232:1.+'
     }
     
     
