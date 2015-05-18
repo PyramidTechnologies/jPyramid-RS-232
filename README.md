@@ -1,4 +1,4 @@
-[![Maven](https://maven-badges.herokuapp.com/maven-central/com.pyramidacceptors/jPyramid-RS-232/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.pyramidacceptors/jPyramid-RS-232) [![Build Status](https://travis-ci.org/PyramidTechnologies/jPyramid-RS-232.svg?branch=develop)](https://travis-ci.org/PyramidTechnologies/jPyramid-RS-232) [![Coverage Status](https://coveralls.io/repos/PyramidTechnologies/jPyramid-RS-232/badge.svg)](https://coveralls.io/r/PyramidTechnologies/jPyramid-RS-232)
+[![Maven](https://maven-badges.herokuapp.com/maven-central/com.pyramidacceptors/jPyramid-RS-232/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.pyramidacceptors/jPyramid-RS-232) [![Build Status](https://travis-ci.org/PyramidTechnologies/jPyramid-RS-232.svg?branch=develop)](https://travis-ci.org/PyramidTechnologies/jPyramid-RS-232) [![Coverage Status](https://coveralls.io/repos/PyramidTechnologies/jPyramid-RS-232/badge.svg?branch=master)](https://coveralls.io/r/PyramidTechnologies/jPyramid-RS-232?branch=master)
 
 Overview
 --------
