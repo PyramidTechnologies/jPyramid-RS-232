@@ -123,7 +123,7 @@ public class PyramidAcceptor implements ICommDevice, PTalkEventListener {
 
     /**
      * Returns an object that does not touch any serial ports.
-     * @return
+     * @return PyramidAcceptor dummy instance (no physical port connection)
      */
     public static PyramidAcceptor asTest() {
         return new PyramidAcceptor(RS232Configuration.INSTANCE);
