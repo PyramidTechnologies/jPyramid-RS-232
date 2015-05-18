@@ -1,6 +1,10 @@
 package com.pyramidacceptors.ptalk.api;
 
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
 import org.junit.Test;
+
+import java.util.Random;
 
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.is;
@@ -189,6 +193,25 @@ public class RS232PacketTest {
      */
     @Test
     public void testOr() throws Exception {
+        byte[] data;
+        RS232Packet packet;
+
+        // Good input
+        data = new byte[] { 0x45, 0x10, 0x22, 0x33, 0x44, 0x0E, 0x20, 0x37, 0x68, 0x19, 0x7F };
+        packet = new RS232Packet(data);
+        assertThat(true, is(packet.or(1, (byte)0x11)));
+        assertThat((byte)0x11, is(packet.get(1)));
+
+        // Too large of an index
+        assertThat(true, is(not(packet.or(42, (byte) 0x45))));
+
+        // Empty packet
+        packet = new RS232Packet();
+        assertThat(true, is(not(packet.or(-1, (byte)0x24))));
+
+        // Overflow
+        packet = new RS232Packet();
+        assertThat(true, is(not(packet.or(Integer.MAX_VALUE, (byte)0x24))));
 
     }
 
@@ -199,7 +222,33 @@ public class RS232PacketTest {
      */
     @Test
     public void testParseAsNew() throws Exception {
+        byte[] data;
+        String expected;
+        RS232Packet packet;
 
+        // Test that 0 sum packets return "Acceptor Bus/Not Connected"
+        expected = RS232Packet.NO_CONNECTION;
+        packet = new RS232Packet();
+        data = new byte[] {0, 0, 0};
+        assertThat(expected,is(packet.parseAsNew(data).getMessage()));
+
+        // Empty packet
+        packet = new RS232Packet();
+        expected = RS232Packet.NO_CONNECTION;
+        data = new byte[0];
+        assertThat(expected,is(packet.parseAsNew(data).getMessage()));
+
+        // Bad length
+        packet = new RS232Packet();
+        expected = RS232Packet.BAD_MESSAGE_LENGTH;
+        data = new byte[] { 0x45, 0x10, 0x22, 0x33, 0x44, 0x0E, 0x20, 0x37, 0x68, 0x19, 0x7F, 0x09, 0x10 };
+        assertThat(expected,is(packet.parseAsNew(data).getMessage()));
+
+        // Bad checksum
+        packet = new RS232Packet();
+        expected = RS232Packet.BAD_CHECKSUM;
+        data = new byte[] { 0x45, 0x10, 0x22, 0x33, 0x44, 0x0E, 0x20, 0x37, 0x68, 0x19, 0x7F};
+        assertThat(expected,is(packet.parseAsNew(data).getMessage()));
     }
 
     /**
@@ -209,7 +258,26 @@ public class RS232PacketTest {
      */
     @Test
     public void testToString() throws Exception {
+        byte[] data;
+        String expected;
+        RS232Packet packet;
 
+        // Create a packet which by default has an empty message field. Call toString
+        // and we should just get back the raw string of what we instantiated the packet with.
+        data = new byte[] {0x09};
+        packet = new RS232Packet(data);
+        expected = "Raw";
+        assertThat(true, is(packet.toString().contains(expected)));
+
+        // Create a packet and parse it to get the decoded message. toString
+        // should have each of the following
+        data = new byte[0];
+        String[] expects = new String[] { "Response", "Event", "Message"};
+        packet = new RS232Packet();
+        packet.parseAsNew(data);
+        for(String str : expects) {
+            assertThat(true, is(packet.toString().contains(str)));
+        }
     }
 
     /**
@@ -222,6 +290,42 @@ public class RS232PacketTest {
     @Test
     public void testEquals() throws Exception {
 
+        RS232Packet packet = new RS232Packet();
+        RS232Packet clone = packet;
+        RS232Packet anotherClone = clone;
+
+        // Reflexivity - An object must equal itself.
+        assertThat(packet, is(clone));
+
+        // Symmetry
+        assertThat(clone, is(packet));
+
+        // Transitivity
+        assertThat(anotherClone, is(packet));
+
+
+        // Try it all over again but with a non-empty packet
+        byte[] good = new byte[] { 0x10, 0x3A, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x08 };
+        byte[] acceptThis = new byte[] {0x02, 0x0B, 0x20, 0x04, 0x00, 0x08, 0x00, 0x64, 0x64, 0x03, 0x27};
+        packet = new RS232Packet(good);
+        packet.parseAsNew(acceptThis);
+        clone = packet;
+        anotherClone = clone;
+        assertThat(packet, is(clone));
+        assertThat(clone, is(packet));
+        assertThat(anotherClone, is(packet));
+
+
+        // Non-instances must not be equal
+        assertThat(true, is(not(packet.equals(IPacket.class))));
+
+        // Unlike packets should not be equal
+        packet = new RS232Packet(good);
+        packet.or(1, (byte)0x06);
+        assertThat(true, is(not(packet.equals(clone))));
+
+        clone = new RS232Packet(acceptThis);
+        assertThat(true, is(not(packet.equals(clone))));
     }
 
     /**
@@ -230,6 +334,28 @@ public class RS232PacketTest {
      */
     @Test
     public void testHashCode() throws Exception {
+        int runFor = 256;
+        int acceptableCollisions = 3;
 
+        RS232Packet packet = new RS232Packet();
+        final Multiset<Integer> set = HashMultiset.create();
+        int hash;
+
+        for(int i=0; i<runFor; i++) {
+            packet.parseAsNew(generateRandomBytes(11));
+            hash = packet.hashCode();
+            set.add(hash);
+            assertThat(true, is(not(set.count(hash) > acceptableCollisions)));
+        }
+
+        // Pass
+        assertTrue(true);
+    }
+
+    private byte[] generateRandomBytes(int len) {
+        byte[] out = new byte[len];
+        Random rnd = new Random();
+        rnd.nextBytes(out);
+        return out;
     }
 }

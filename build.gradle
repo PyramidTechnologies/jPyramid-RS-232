@@ -98,6 +98,7 @@ repositories {
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
+    testCompile 'com.google.guava:guava:18.0'
     compile 'org.scream3r:jssc:2.8.0'
     compile 'org.apache.commons:commons-collections4:4.0'
 }
