@@ -7,8 +7,13 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.times;
@@ -23,12 +28,43 @@ public class PyramidAcceptorTest {
     @Mock
     EventMonitor monitor;
 
+    private String testPort = "";
+
     /**
      * Initialize the mock monitor used for event testing
      */
     @Before
     public void setup() {
+
         MockitoAnnotations.initMocks(this);
+
+        Properties prop = new Properties();
+        InputStream input = null;
+
+        try {
+
+            input = PyramidAcceptorTest.class.getClassLoader().getResource("test.properties").openStream();
+            prop.load(input);
+
+            testPort = prop.getProperty("test_port");
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        } finally {
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        if(testPort.length() == 0) {
+            Logger.getAnonymousLogger().log(Level.ALL, "COM port not set in test.properties. Skipping test " +
+                    this.getClass().getCanonicalName());
+        }
+
     }
 
     @Test
@@ -89,6 +125,18 @@ public class PyramidAcceptorTest {
 
 
         acceptor.removeChangeListener(monitor);
+    }
+
+    @Test
+    public void testConnect() throws Exception {
+
+        if(testPort.length() > 0) {
+            PyramidAcceptor acceptor = PyramidAcceptor.valueOfRS232(testPort);
+            acceptor.connect();
+
+            acceptor.disconnect();
+        }
+
     }
 
     class EventMonitor implements PTalkEventListener {
