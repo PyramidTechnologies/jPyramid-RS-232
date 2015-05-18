@@ -39,7 +39,8 @@ public interface IConfiguration {
      * notification for.
      * The mask is a bitwise integer where 1 indicates active and indicates <br>
      * inactive.
-     * @param mask 
+     * @param mask  bitwise event mask
+     * @see com.pyramidacceptors.ptalk.api.RS232Configuration.RS232State for bit indicies
      */
     void setEventMask(int mask);
     

@@ -6,7 +6,7 @@
 
     <groupId>com.pyramidacceptors</groupId>
     <artifactId>jPyramid-RS-232</artifactId>
-    <version>1.1.1</version>
+    <version>1.2.0</version>
 
     <!-- More Project Information -->
     <name>jPyramid-RS-232</name>
@@ -57,6 +57,25 @@
                 <configuration>
                     <source>1.7</source>
                     <target>1.7</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.eluder.coveralls</groupId>
+                <artifactId>coveralls-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <sourceEncoding>utf-8</sourceEncoding>
+                    <repoToken>${coverallsToken}</repoToken>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>cobertura-maven-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <check>true</check>
+                    <format>xml</format>
+                    <aggregate>true</aggregate>
                 </configuration>
             </plugin>
         </plugins>

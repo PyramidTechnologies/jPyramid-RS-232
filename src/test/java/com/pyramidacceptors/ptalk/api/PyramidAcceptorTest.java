@@ -7,8 +7,13 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.times;
@@ -28,6 +33,7 @@ public class PyramidAcceptorTest {
      */
     @Before
     public void setup() {
+
         MockitoAnnotations.initMocks(this);
     }
 
@@ -90,6 +96,8 @@ public class PyramidAcceptorTest {
 
         acceptor.removeChangeListener(monitor);
     }
+
+
 
     class EventMonitor implements PTalkEventListener {
         @Override

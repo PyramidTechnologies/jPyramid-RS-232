@@ -73,8 +73,4 @@ class PortScanner {
 
         return portName;
     }
-
-    private PortScanner() {
-    }
-
 }
