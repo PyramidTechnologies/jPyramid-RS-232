@@ -17,7 +17,6 @@
 
 package com.pyramidacceptors.ptalk.api;
 
-import com.pyramidacceptors.ptalk.api.APIConstants.BillNames;
 import com.pyramidacceptors.ptalk.api.RS232Socket.CreditActions;
 import com.pyramidacceptors.ptalk.api.event.Events;
 import java.util.EnumSet;
@@ -110,7 +109,7 @@ interface IPacket {
      * Returns the event, state, and message flags associated with this packet
      * @return EnumSet of all events enabled or signaled by this packet
      */
-    EnumSet<Events> getInterrpretedEvents();
+    EnumSet<Events> getInterpretedEvents();
     
     /**
      * Get any message associated with this packet as a string

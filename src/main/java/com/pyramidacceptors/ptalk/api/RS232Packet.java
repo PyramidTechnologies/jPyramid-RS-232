@@ -19,7 +19,6 @@ package com.pyramidacceptors.ptalk.api;
 
 import static com.pyramidacceptors.ptalk.api.RS232Socket.CreditActions.*;
 
-import com.pyramidacceptors.ptalk.api.APIConstants.BillNames;
 import com.pyramidacceptors.ptalk.api.RS232Socket.CreditActions;
 import com.pyramidacceptors.ptalk.api.event.Events;
 import java.util.ArrayList;
@@ -50,6 +49,12 @@ final class RS232Packet implements IPacket{
     private CreditActions creditAction = NONE;
     private String message = "";
     private BillNames billName;
+
+    public static final String NO_RESPONSE = "No Response";
+    public static final String BAD_MESSAGE_LENGTH = "Bad Message Length";
+    public static final String BAD_CHECKSUM = "Bad checksum";
+    public static final String NO_CONNECTION = "Acceptor Bus/Not Connected";
+
     /**
      * Creates a new, empty RS232 packet
      */
@@ -57,9 +62,12 @@ final class RS232Packet implements IPacket{
     
     /**
      * Create a new RS232 packet initialized with the byte array {@code bytes}
-     * @param bytes 
+     * @param bytes
+     * @throws IllegalAccessException when bytes is null
      */
     RS232Packet(byte[] bytes) {
+        if(!(bytes instanceof byte[]))
+            throw new IllegalArgumentException("bytes must not be null");
         for(byte b : bytes)
             data.add(b);
     }
@@ -68,7 +76,10 @@ final class RS232Packet implements IPacket{
      * {@inheritDoc}
      */
     @Override
-    public boolean isValid() {        
+    public boolean isValid() {
+        if(data.size() != 11)
+            return false;
+
         byte checksum = (byte)(data.get(1) ^ data.get(2));
         for(int i=3;i<9;i++) {
             checksum ^= data.get(i);
@@ -105,6 +116,7 @@ final class RS232Packet implements IPacket{
     
     /**
      * {@inheritDoc}
+     * @throws IndexOutOfBoundsException if index is outside packet bounds
      */    
     @Override
     public byte get(int index) {
@@ -129,7 +141,7 @@ final class RS232Packet implements IPacket{
      */    
     @Override
     public boolean replace(int index, byte b) {
-        if(index > (this.data.size()-1))
+        if(index < 0 || index > (this.data.size()-1))
             return false;
         this.data.set(index, b);
         return true;
@@ -140,7 +152,7 @@ final class RS232Packet implements IPacket{
      */    
     @Override
     public boolean or(int index, byte b) {
-        if(index > (this.data.size()-1))
+        if(index < 0 || index > (this.data.size()-1))
             return false;
         byte o = this.data.get(index);
         this.data.set(index, (byte)(o | b));
@@ -155,13 +167,13 @@ final class RS232Packet implements IPacket{
         for(byte b : bytes)
             this.data.add(b);
 
-        // Get handle on configuratoin
+        // Get handle on configuration
         RS232Configuration config = RS232Configuration.INSTANCE;
         // Do not process invalid messages, do not alter ACK if invalid
         if(sum(data) == 0) {
             
             // Don't modify the data to send (nextMsg)
-            message = "Acceptor Bus/Not Connected";
+            message = NO_CONNECTION;
           
         } else if((data.size() == 11) && isValid()) {
             
@@ -234,12 +246,10 @@ final class RS232Packet implements IPacket{
                
             // Else set the informative error message!
         } else {
-            if(data.isEmpty())
-                message = "No Response";
-            else if(data.size() != 11)
-                message = "Bad Message Length";
+            if(data.size() != 11)
+                message = BAD_MESSAGE_LENGTH;
             else
-                message = "Bad checksum";                      
+                message = BAD_CHECKSUM;
         }
         
         return this;
@@ -249,7 +259,7 @@ final class RS232Packet implements IPacket{
      * {@inheritDoc}
      */    
     @Override
-    public EnumSet<Events> getInterrpretedEvents() {
+    public EnumSet<Events> getInterpretedEvents() {
         return this.event;
     }
 
@@ -352,9 +362,11 @@ final class RS232Packet implements IPacket{
         }
         StringBuilder sb = new StringBuilder();
         for (Byte b : l) {
-            sb.append(b).append(" ");
+            sb.append(String.format(", 0x%02X", b));
         }
-        return sb.toString();
+        String result = sb.toString();
+        // We don't want that leading comma
+        return result.substring(1, result.length()).trim();
     }
 
 }

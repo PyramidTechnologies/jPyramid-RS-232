@@ -88,7 +88,7 @@ final class RS232Socket implements ISocket {
         IPacket packet = new RS232Packet().parseAsNew(bytes);
         creditAction = packet.getCreditAction();
         PTalkEvent e = new PTalkEvent(this, packet.getBillName(), 
-                packet.getMessage(), packet.getInterrpretedEvents());
+                packet.getMessage(), packet.getInterpretedEvents());
         debugQ.offer(packet);
         return e;
     }

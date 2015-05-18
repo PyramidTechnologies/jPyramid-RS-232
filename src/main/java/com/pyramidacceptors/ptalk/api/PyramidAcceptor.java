@@ -53,8 +53,17 @@ public class PyramidAcceptor implements ICommDevice, PTalkEventListener {
      * @param port
      * @param config 
      */
-    private PyramidAcceptor(PyramidPort port, IConfiguration config) { 
+    private PyramidAcceptor(PyramidPort port, IConfiguration config) {
         this.port = port; 
+        this.config = config;
+    }
+
+    /**
+     * Used only for testing
+     * @param config default RS-232 config is fine
+     */
+    private PyramidAcceptor(IConfiguration config) {
+        this.port = null;
         this.config = config;
     }
     
@@ -110,6 +119,14 @@ public class PyramidAcceptor implements ICommDevice, PTalkEventListener {
             throw new PyramidDeviceException("Unable to autodetect device", 
                     "", "");
         }
+    }
+
+    /**
+     * Returns an object that does not touch any serial ports.
+     * @return
+     */
+    public static PyramidAcceptor asTest() {
+        return new PyramidAcceptor(RS232Configuration.INSTANCE);
     }
 
      /**
@@ -306,8 +323,7 @@ public class PyramidAcceptor implements ICommDevice, PTalkEventListener {
         }          
 
         // If we caught a generic event or something that we couldn't parse
-        if(event.contains(Generic) || event.isEmpty() && 
-                ((Generic.getIntId()& eventMask) == Generic.getIntId())) {
+        if(event.contains(Generic) || event.isEmpty() && ((Generic.getIntId()& eventMask) == Generic.getIntId())) {
                 fireChangeEvent(evt);                
         }
     }

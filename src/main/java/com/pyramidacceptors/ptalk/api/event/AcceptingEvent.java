@@ -17,7 +17,7 @@
 
 package com.pyramidacceptors.ptalk.api.event;
 
-import com.pyramidacceptors.ptalk.api.APIConstants.BillNames;
+import com.pyramidacceptors.ptalk.api.BillNames;
 import java.util.EnumSet;
 
 
