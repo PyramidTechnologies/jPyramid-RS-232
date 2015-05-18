@@ -1,21 +1,16 @@
 package com.pyramidacceptors.ptalk.api;
 
-import com.pyramidacceptors.ptalk.api.event.Events;
 import com.pyramidacceptors.ptalk.api.event.PTalkEvent;
 import com.pyramidacceptors.ptalk.api.event.PTalkEventListener;
 import org.junit.Test;
 
 import org.junit.Before;
-import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.EnumSet;
-import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,15 +18,13 @@ import java.util.logging.Logger;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.is;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
  * Test assumes you're slave is on port test.properties.test_port
  * Created by catix on 5/17/2015.
  */
-public class CourierTest {
+public class CourierTest_Optional {
 
 
     @Mock
@@ -52,7 +45,7 @@ public class CourierTest {
 
         try {
 
-            input = CourierTest.class.getClassLoader().getResource("test.properties").openStream();
+            input = CourierTest_Optional.class.getClassLoader().getResource("test.properties").openStream();
             prop.load(input);
 
             testPort = prop.getProperty("test_port");

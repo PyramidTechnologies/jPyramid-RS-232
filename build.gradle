@@ -30,6 +30,11 @@ signing {
     sign configurations.archives
 }
 
+test {
+    // Exclude any optional tests
+    exclude 'com/pyramidacceptors/ptalk/api/**_Optional.*'
+}
+
 uploadArchives {
     configuration = configurations.archives
 

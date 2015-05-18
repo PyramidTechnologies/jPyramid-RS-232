@@ -17,7 +17,7 @@ import static org.junit.Assert.*;
  * to run this test.
  * Created by catix on 5/17/2015.
  */
-public class PortScannerTest {
+public class PortScannerTest_Optional {
 
     private String testPort = "";
 
@@ -32,7 +32,7 @@ public class PortScannerTest {
 
         try {
 
-            input = PortScannerTest.class.getClassLoader().getResource("test.properties").openStream();
+            input = PortScannerTest_Optional.class.getClassLoader().getResource("test.properties").openStream();
             prop.load(input);
 
             testPort = prop.getProperty("test_port");
