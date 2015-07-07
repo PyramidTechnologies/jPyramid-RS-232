@@ -20,10 +20,10 @@ into their system. Get up and running quickly without having to worry about the 
     }
     
     
-### Dependencies if you do not want to use Gradle
+### Dependencies if you prefer to not use Gradle
 
 * [Apache Commons Collection 4](https://commons.apache.org/proper/commons-collections/)
-* [jSSC 2.8.0](https://github.com/scream3r/java-simple-serial-connector
+* [jSSC 2.8.0](https://github.com/scream3r/java-simple-serial-connector)
     
 ### Or Pick Your Maven Toolset ###
 
