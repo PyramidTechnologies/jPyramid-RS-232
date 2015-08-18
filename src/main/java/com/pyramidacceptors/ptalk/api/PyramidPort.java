@@ -17,8 +17,6 @@
 
 package com.pyramidacceptors.ptalk.api;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import jssc.SerialPort;
 import jssc.SerialPortEventListener;
@@ -36,7 +34,7 @@ import jssc.SerialPortTimeoutException;
  * @since 1.0.0.0
  */
 final public class PyramidPort {
-    
+
     private SerialPort _port;      
     private final String portName;    
     private final int baudRate;
@@ -158,7 +156,6 @@ final public class PyramidPort {
         }
         catch(SerialPortException ex)
         {        
-            Logger.getLogger(SerialPort.class.getName()).log(Level.SEVERE, null, ex);
             throw new PyramidDeviceException(ex.getPortName(), ex.getMethodName(), ex.getExceptionType());
         }
     }  
@@ -176,7 +173,6 @@ final public class PyramidPort {
       try {
           return _port.openPort();
       } catch (SerialPortException ex) {
-          Logger.getLogger(PyramidPort.class.getName()).log(Level.SEVERE, null, ex);
           throw new PyramidDeviceException(ex.getPortName(), ex.getMethodName(), ex.getExceptionType());
       }
   }
@@ -196,7 +192,6 @@ final public class PyramidPort {
           _port.purgePort(dataBits);
           return _port.closePort();
       } catch (SerialPortException ex) {
-          Logger.getLogger(PyramidPort.class.getName()).log(Level.SEVERE, null, ex);
           throw new PyramidDeviceException(ex.getPortName(), ex.getMethodName(), ex.getExceptionType());
       }
   }
@@ -253,7 +248,6 @@ final public class PyramidPort {
        try {
           _port.writeBytes(data);
       } catch (SerialPortException ex) {
-          Logger.getLogger(PyramidPort.class.getName()).log(Level.SEVERE, null, ex);
           throw new PyramidDeviceException(ex.getPortName(), ex.getMethodName(), ex.getExceptionType());
       } 
   }

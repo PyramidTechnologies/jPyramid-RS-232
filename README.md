@@ -21,7 +21,13 @@ If youa re using an Apex 7000 or Spectra, please make sure that all of your dip 
     dependencies {
         compile 'com.pyramidacceptors:jPyramid-RS-232:1.+'
     }
-    
+
+### Dependencies if you prefer to not use Gradle
+
+* [Apache Commons Collection 4](https://commons.apache.org/proper/commons-collections/)
+* [jSSC 2.8.0](https://github.com/scream3r/java-simple-serial-connector)
+* [slf4j](http://www.slf4j.org/docs.html)
+  - We have provided a sample config file for log4j.
     
 ### Dependencies if you prefer to not use Gradle
 

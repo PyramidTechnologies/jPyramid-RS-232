@@ -21,8 +21,8 @@ import static com.pyramidacceptors.ptalk.api.event.Events.*;
 import com.pyramidacceptors.ptalk.api.event.*;
 import java.util.EnumSet;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Pyramid Acceptor class is the realization of an {@code ICommDevice}.<br>
@@ -32,7 +32,8 @@ import java.util.logging.Logger;
  * @since 1.0.0.0
  */
 public class PyramidAcceptor implements ICommDevice, PTalkEventListener {
-    
+    private final Logger logger = LoggerFactory.getLogger(PyramidAcceptor.class);
+
     private Courier courier;
     private final PyramidPort port;    
     private final IConfiguration config;
@@ -172,20 +173,17 @@ public class PyramidAcceptor implements ICommDevice, PTalkEventListener {
                 courier = new Courier(port, pollRate, new RS232Socket());
                 courier.addChangeListener(this);
                 courier.start();
-                Logger.getLogger(PyramidAcceptor.class.getName()).log(Level.INFO, 
-                        String.format("Connected to device on port %s",
-                        port.getPortName()));
+                logger.info("Connected to device on port {}",
+                        port.getPortName());
             
             } else {
-                
-                Logger.getLogger(PyramidAcceptor.class.getName()).log(Level.INFO, 
-                        String.format("Failed to connect device on port %s", 
-                        port.getPortName()));
+
+                logger.error("Failed to connect device on port {}",
+                        port.getPortName());
             }
             
         }catch(PyramidDeviceException ex) {
-            Logger.getLogger(PyramidAcceptor.class.getName()).log(Level.SEVERE,
-                    null, ex);
+            logger.error("Failed to connect: {}", ex);
         }
     }
 
@@ -201,26 +199,18 @@ public class PyramidAcceptor implements ICommDevice, PTalkEventListener {
             
             // And then see if we can close the port...
             if(port.closePort()) {
-                Logger.getLogger(PyramidAcceptor.class.getName()).log(Level.INFO, 
-                        String.format("Disconnect device from port %s", 
-                        port.getPortName()));
+                logger.info("Disconnect device from port {}",
+                        port.getPortName());
             
             } else {
-                Logger.getLogger(PyramidAcceptor.class.getName()).log(Level.INFO, 
-                        String.format("Failed to disconnect device on port %s", 
-                        port.getPortName()));
+                logger.error("Failed to disconnect device on port {}",
+                        port.getPortName());
             }
             
         } catch(PyramidDeviceException ex) {
-            Logger.getLogger(PyramidAcceptor.class.getName()).log(Level.SEVERE,
-                    null, ex);
+            logger.error("Failed to disconnect: {}", ex);
         }
     }
-
-//    @Override
-//    public void getStatus() {
-//        throw new UnsupportedOperationException("Not supported yet.");
-//    }
 
     @Override
     public int getPollRate() {

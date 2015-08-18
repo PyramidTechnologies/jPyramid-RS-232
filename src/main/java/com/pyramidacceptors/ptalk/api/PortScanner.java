@@ -16,8 +16,8 @@
  */
 package com.pyramidacceptors.ptalk.api;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Pyramid Technologies, Inc. 
@@ -25,6 +25,7 @@ import java.util.logging.Logger;
  * Date: 14-07-2014 
  */
 class PortScanner {
+    private static final Logger logger = LoggerFactory.getLogger(PortScanner.class);
 
     /**
      * Attempts to auto detect a slave device connected to master. The slave
@@ -61,8 +62,7 @@ class PortScanner {
                 port.closePort();
                 
             } catch (PyramidDeviceException ex) {
-                Logger.getLogger(PortScanner.class.getName()).log(Level.INFO,
-                        String.format("Unable to open port: %s", p));
+                logger.error("Unable to open port: {} -> {}", p, ex);
             }
 
             // Stop when we find a port

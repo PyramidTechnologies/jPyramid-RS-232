@@ -6,7 +6,7 @@ group='com.pyramidacceptors'
 archivesBaseName = "jPyramid-RS-232"
 
 sourceCompatibility = 1.7
-version = '1.2.0'
+version = '1.2.1'
 
 task javadocJar(type: Jar) {
     classifier = 'javadoc'
@@ -20,6 +20,17 @@ task sourcesJar(type: Jar) {
 
 artifacts {
     archives javadocJar, sourcesJar
+}
+
+//create a single Jar with all dependencies
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'jPyramid-RS-232',
+                'Implementation-Version': version
+    }
+    baseName = project.name + "-" + version
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
 }
 
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
@@ -107,4 +118,5 @@ dependencies {
     testCompile 'org.mockito:mockito-all:2.0.2-beta'
     compile 'org.scream3r:jssc:2.8.0'
     compile 'org.apache.commons:commons-collections4:4.0'
+    compile 'org.slf4j:slf4j-api:1.7.12'
 }
