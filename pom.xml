@@ -6,7 +6,7 @@
 
     <groupId>com.pyramidacceptors</groupId>
     <artifactId>jPyramid-RS-232</artifactId>
-    <version>1.2.0</version>
+    <version>1.2.1</version>
 
     <!-- More Project Information -->
     <name>jPyramid-RS-232</name>
