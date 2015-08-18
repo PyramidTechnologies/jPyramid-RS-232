@@ -25,8 +25,6 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Pyramid Technologies, Inc. 
@@ -241,8 +239,7 @@ final class RS232Packet implements IPacket{
             if(event.contains(Events.Stacked)) {
                 event.add(Events.Credit);
                 billName = BillNames.fromByte(credit);    
-                Logger.getLogger(RS232Packet.class.getName()).log(Level.INFO, String.format("Crediting %s", billName.toString()));
-            }                    
+            }
                
             // Else set the informative error message!
         } else {
