@@ -20,8 +20,10 @@ package com.pyramidacceptors.ptalk.api;
 import com.pyramidacceptors.ptalk.api.event.PTalkEvent;
 import com.pyramidacceptors.ptalk.api.event.PTalkEventListener;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import jssc.SerialPortException;
 import jssc.SerialPortTimeoutException;
@@ -35,9 +37,10 @@ import jssc.SerialPortTimeoutException;
  * @since 1.0.0.0
  */
 final class Courier extends Thread {
-    
+    private final Logger logger = LoggerFactory.getLogger(Courier.class);
+
     private PyramidPort port;
-    private boolean _stopThread = false;
+    private AtomicBoolean _stopThread = new AtomicBoolean(false);
     private boolean _comOkay = true;
     
     // Socket to handle all data IO with slave
@@ -112,7 +115,7 @@ final class Courier extends Thread {
      * Stop the execution and null out reference objects
      */
     protected void stopThread() {
-        this._stopThread = true;
+        this._stopThread.set(true);
         port = null;
     }
     
@@ -125,7 +128,7 @@ final class Courier extends Thread {
         
         // Loop until we receive client calls the stop thread method
         PTalkEvent e;
-        while(!_stopThread) {                       
+        while(!_stopThread.get()) {
             
             try {
     
@@ -142,15 +145,11 @@ final class Courier extends Thread {
                 // Wait for pollRate milliseconds before looping through again
                 sleep(pollRate);
                        
-            } catch (PyramidDeviceException ex) {
-                Logger.getLogger(Courier.class.getName()).log(Level.SEVERE, ex.getExceptionType());
-                _comOkay = false;
             } catch (SerialPortException ex) {
-                Logger.getLogger(Courier.class.getName()).log(Level.SEVERE, ex.getExceptionType());
+                logger.error(ex.getMessage());
                 _comOkay = false;
             } catch (SerialPortTimeoutException ex1) {
-                Logger.getLogger(Courier.class.getName()).log(Level.INFO,
-                        "SendBytes timed out. ({0} ms)", APIConstants.COMM_TIMEOUT);
+                logger.error("SendBytes timed out. ({0} ms)", APIConstants.COMM_TIMEOUT);
                 _comOkay = false;
             }
         }
@@ -166,7 +165,8 @@ final class Courier extends Thread {
         try {
             Thread.sleep(d);
         } catch (InterruptedException ex) {
-            Logger.getLogger(Courier.class.getName()).log(Level.SEVERE, null, ex);
+            LoggerFactory.getLogger("CourierSleeper")
+                    .error("Sleep interrupted: {}", ex);
         }     
     }
 }
