@@ -18,7 +18,14 @@ into their system. Get up and running quickly without having to worry about the 
     dependencies {
         compile 'com.pyramidacceptors:jPyramid-RS-232:1.1'
     }
-    
+
+### Dependencies if you prefer to not use Gradle
+
+* [Apache Commons Collection 4](https://commons.apache.org/proper/commons-collections/)
+* [jSSC 2.8.0](https://github.com/scream3r/java-simple-serial-connector)
+* [slf4j w/ log4j](http://www.slf4j.org/docs.html)
+  - Note that we have this project configured to use log4j. If you prefer another framework
+    you should be able to swap it out as described in the docs.
     
 ### Or Pick Your Maven Toolset ###
 
