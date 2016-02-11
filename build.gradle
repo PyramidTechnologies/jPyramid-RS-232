@@ -6,7 +6,7 @@ group='com.pyramidacceptors'
 archivesBaseName = "jPyramid-RS-232"
 
 sourceCompatibility = 1.7
-version = '1.2.1'
+version = '1.2.2'
 
 task javadocJar(type: Jar) {
     classifier = 'javadoc'
