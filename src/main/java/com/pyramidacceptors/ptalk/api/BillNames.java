@@ -1,10 +1,13 @@
 package com.pyramidacceptors.ptalk.api;
 
 /**
-* Enumerated bill enables for a bill validator {@code ICommDevice}.<br>
-* Pyramid designates up to twelve(12) slots for notes. <br>
-* RS-232 supports ONLY 7 notes.
-* <br>
+ * Enumerated bill enables for a bill validator {@code ICommDevice}.<br>
+ * Pyramid designates up to twelve(12) slots for notes. <br>
+ * RS-232 supports ONLY 7 notes.
+ * <br><br>
+ * At this time, RS-232 does not support configuring these
+ * options. Use Acceptor Tools or Blustream to configure this option.
+ * <a href="https://pyramidacceptors.com/app">Download</a>
 * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
 * @since 1.0.0.0
 */

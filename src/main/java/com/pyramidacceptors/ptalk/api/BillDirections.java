@@ -2,7 +2,12 @@ package com.pyramidacceptors.ptalk.api;
 
 /**
 * Enumerated bill directions specifically for a bill validator
-* type {@code ICommDevice}<br>
+* type.
+ *{@code ICommDevice}<br><br>
+ * At this time, RS-232 does not support configuring these
+ * options. Use Acceptor Tools or Blustream to configure this option.
+ * <a href="https://pyramidacceptors.com/app">Download</a>
+ *
 * <br>
 * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
 * @since 1.0.0.0
