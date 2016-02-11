@@ -38,6 +38,7 @@ public enum RS232Configuration implements IConfiguration {
     private final AtomicBoolean _escrowmode 
             = new AtomicBoolean(true);          // Set to false to disable escrow
     private int _edMask = 0x7F;                 // All bills enabled by default
+    private int _edMask_bak = 0x7F;             // Backup mask in case user uses setEnabled(false)
     private int _evMask = 0xFF;                 // All events enabled by default
     private final byte _orientation = 0x00;     // Not used at this time
     private final byte _security = 0x00;        // Not used at this time
@@ -81,14 +82,21 @@ public enum RS232Configuration implements IConfiguration {
      */    
     @Override
     public void setEnableMask(int mask) {
-        this._edMask = mask;        
+        this._edMask = this._edMask_bak = mask;
+    }
+
+
+    @Override
+    public void setEnabled(boolean enabled)
+    {
+        this._edMask = enabled ? 0 : this._edMask_bak;
     }
 
     /**
      * {@inheritDoc} 
      */    
     @Override
-    public void setEnabled(boolean enable) {
+    public void setEscrowMode(boolean enable) {
         this._escrowmode.set(enable);
     }
     
@@ -96,7 +104,7 @@ public enum RS232Configuration implements IConfiguration {
      * {@inheritDoc} 
      */    
     @Override
-    public boolean getEnabled() {
+    public boolean getEscrowMode() {
         return this._escrowmode.get();
     }    
     

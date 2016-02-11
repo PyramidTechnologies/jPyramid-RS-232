@@ -74,8 +74,8 @@ final class RS232Socket implements ISocket {
                 break;
         }
         
-        // Finally check if escrow mode is enabled
-        if(!RS232Configuration.INSTANCE.getEnabled())
+        // Finally check if we are enabled
+        if(!RS232Configuration.INSTANCE.getEscrowMode())
             packet.replace(4, (byte)0);
         
         // Checksum it

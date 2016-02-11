@@ -226,10 +226,10 @@ final class RS232Packet implements IPacket{
             byte credit = (byte)((t5 & 0x38) >> 3);
             
             // Check if this bill is enabled. If so, send Accept,
-            // other send return
+            // otherwise send return
             if(credit != 0 && event.contains(Events.Escrowed)) {
-                
-                if((credit & config.getEnableMask()) == credit)
+
+                if( (config.getEnableMask() & (1 << credit - 1)) > 0)
                     creditAction = ACCEPT;
                 else
                     creditAction = RETURN;    
