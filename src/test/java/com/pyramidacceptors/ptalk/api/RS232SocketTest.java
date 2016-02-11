@@ -42,7 +42,7 @@ public class RS232SocketTest {
         // On startup, escrow- mode, the first slave message should always be
         socket = new RS232Socket();
         RS232Configuration.INSTANCE.setEnabled(false);
-        expected = new byte[]{ 0x02, 0x08, 0x10, 0x7F,  0x00,  0x00,  0x03, 0x67};
+        expected = new byte[]{ 0x02, 0x08, 0x10, 0,  0x10,  0x00,  0x03, 0x08};
         actual = socket.generateCommand();
         assertArrayEquals(expected, actual);
         RS232Configuration.INSTANCE.setEnabled(true);
@@ -96,7 +96,7 @@ public class RS232SocketTest {
         byte[] returnThis = new byte[] {0x02, 0x0B, 0x20, 0x04, 0x00, 0x08, 0x00, 0x64, 0x64, 0x03, 0x27};
 
         socket.parseResponse(returnThis);
-        expected = new byte[]{ 0x02, 0x08, 0x10, 0x7F,  0x50,  0x00,  0x03, 0x37};
+        expected = new byte[]{ 0x02, 0x08, 0x10, 0x04,  0x50,  0x00,  0x03, 0x4C};
         actual = socket.generateCommand();
         assertArrayEquals(expected, actual);
     }

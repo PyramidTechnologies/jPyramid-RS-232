@@ -59,13 +59,21 @@ public interface IConfiguration {
     void setEnableMask(int mask);
 
     /**
-     * Enable or disable the slave device if the protocol supports it.
+     * Enables or disables the bill acceptor. If disabled. the master will still be able to poll
+     * and receive status messages from the slave but acceptance is disabled.
+     * @param enabled
+     */
+    void setEnabled(boolean enabled);
+
+    /**
+     * Enable or disable escrow mode on the slave device. This puts the host
+     * in charge of giving the final accept/reject command.
      * @param enable true will enable the device, false will disable
      */
-    void setEnabled(boolean enable);
+    void setEscrowMode(boolean enable);
     
     /**    
-     * @return true if the device is enabled, otherwise false
+     * @return true if the device is in escrow mode, otherwise false
      */
-    boolean getEnabled();
+    boolean getEscrowMode();
 }
