@@ -89,7 +89,7 @@ public enum RS232Configuration implements IConfiguration {
     @Override
     public void setEnabled(boolean enabled)
     {
-        this._edMask = enabled ? 0 : this._edMask_bak;
+        this._edMask = (enabled) ? this._edMask_bak : 0;
     }
 
     /**

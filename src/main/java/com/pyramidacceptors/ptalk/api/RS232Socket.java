@@ -54,9 +54,13 @@ final class RS232Socket implements ISocket {
     @Override
     public byte[] generateCommand() {
         RS232Packet packet = new RS232Packet(base);
+
         if(RS232Configuration.INSTANCE.getAck())
             packet.replace(2, (byte)0x11);
-        
+
+        // Set enabled disable mask
+        packet.replace(3, (byte)RS232Configuration.INSTANCE.getEnableMask());
+
         // Set the accept, return bits or clear them out
         switch(creditAction)
         {

@@ -132,7 +132,7 @@ final class Courier extends Thread {
             
             try {
     
-                // Generate command and set to slave
+                // Generate command and send to slave
                 port.write(socket.generateCommand());
                 
                 // Collect the response
