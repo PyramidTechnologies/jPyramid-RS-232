@@ -18,8 +18,6 @@
 package com.pyramidacceptors.ptalk.api;
 
 import com.pyramidacceptors.ptalk.api.event.PTalkEvent;
-import org.apache.commons.collections4.queue.CircularFifoQueue;
-
 
 /**
  * A socket acts as the transport layer between a master and slave devce.<br>
@@ -33,6 +31,8 @@ import org.apache.commons.collections4.queue.CircularFifoQueue;
 final class RS232Socket implements ISocket {
     
     enum CreditActions { ACCEPT, RETURN, NONE}
+
+    private static final int DEBUG_BUFFER_SZ = 200;
     
     private static final int MAX_PACKET_SIZE = 11;  
     //# basic message           0      1     2      3       4      5      6      7
@@ -48,7 +48,7 @@ final class RS232Socket implements ISocket {
      * start with a standard polling message<br>
      */
     RS232Socket() {
-        debugQ = new CircularFifoQueue<>();
+        debugQ = new CircularFifoQueue<>(DEBUG_BUFFER_SZ);
     } 
         
     @Override
