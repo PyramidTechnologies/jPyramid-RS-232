@@ -95,9 +95,10 @@ public class RS232SocketTest {
         RS232Configuration.INSTANCE.setEnableMask(0x04);
         byte[] returnThis = new byte[] {0x02, 0x0B, 0x20, 0x04, 0x00, 0x08, 0x00, 0x64, 0x64, 0x03, 0x27};
 
-        socket.parseResponse(returnThis);
+        RS232Packet resp = socket.parseResponse(returnThis);
+        CreditActions creditAction = resp.getCreditAction();
         expected = new byte[]{ 0x02, 0x08, 0x10, 0x04,  0x50,  0x00,  0x03, 0x4C};
-        actual = socket.generateCommand(CreditActions.NONE);
+        actual = socket.generateCommand(creditAction);
         assertArrayEquals(expected, actual);
     }
 
