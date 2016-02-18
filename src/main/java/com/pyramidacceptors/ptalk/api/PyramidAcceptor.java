@@ -21,6 +21,8 @@ import static com.pyramidacceptors.ptalk.api.event.Events.*;
 import com.pyramidacceptors.ptalk.api.event.*;
 import java.util.EnumSet;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,8 +38,7 @@ public class PyramidAcceptor implements ICommDevice, PTalkEventListener {
 
     private Courier courier;
     private final PyramidPort port;    
-    private final RS232Configuration config;
-    
+
     // Use CopyOnWriteArrayList to avoid ConcurrentModificationExceptions if a
     // listener attempts to remove itself during event notification.
     private final CopyOnWriteArrayList<PTalkEventListener> listeners 
@@ -47,21 +48,17 @@ public class PyramidAcceptor implements ICommDevice, PTalkEventListener {
     /**
      * Create a new PyramidAcceptor
      * 
-     * @param port
-     * @param config 
+     * @param port string port name
      */
-    private PyramidAcceptor(PyramidPort port, RS232Configuration config) {
+    private PyramidAcceptor(PyramidPort port) {
         this.port = port; 
-        this.config = config;
     }
 
     /**
      * Used only for testing
-     * @param config default RS-232 config is fine
      */
-    private PyramidAcceptor(RS232Configuration config) {
+    private PyramidAcceptor() {
         this.port = null;
-        this.config = config;
     }
     
     /**
@@ -73,8 +70,7 @@ public class PyramidAcceptor implements ICommDevice, PTalkEventListener {
      * cannot be opened.
      */
     public static PyramidAcceptor valueOfRS232(String portName) throws PyramidDeviceException {
-        return new PyramidAcceptor(new PyramidPort.PortBuilder(portName).build(),
-        RS232Configuration.INSTANCE);
+        return new PyramidAcceptor(new PyramidPort.PortBuilder(portName).build());
     }
     
     /**
@@ -96,7 +92,7 @@ public class PyramidAcceptor implements ICommDevice, PTalkEventListener {
             int databits, int stopbits, int parity) throws PyramidDeviceException {
             return new PyramidAcceptor(new PyramidPort.PortBuilder(portName)
                     .baudRate(baudRate).dataBits(databits).stopBits(stopbits)
-                    .parity(parity).build(), config);
+                    .parity(parity).build());
 
     }
     
@@ -110,8 +106,7 @@ public class PyramidAcceptor implements ICommDevice, PTalkEventListener {
     public static PyramidAcceptor valueOfRS232() throws PyramidDeviceException {
         String portName = PortScanner.find();
         if(!portName.equals("")){
-            return new PyramidAcceptor(new PyramidPort.PortBuilder(portName).build(),
-                RS232Configuration.INSTANCE);
+            return new PyramidAcceptor(new PyramidPort.PortBuilder(portName).build());
         } else {
             throw new PyramidDeviceException("Unable to autodetect device", 
                     "", "");
@@ -123,7 +118,7 @@ public class PyramidAcceptor implements ICommDevice, PTalkEventListener {
      * @return PyramidAcceptor dummy instance (no physical port connection)
      */
     public static PyramidAcceptor asTest() {
-        return new PyramidAcceptor(RS232Configuration.INSTANCE);
+        return new PyramidAcceptor();
     }
 
 
@@ -147,6 +142,14 @@ public class PyramidAcceptor implements ICommDevice, PTalkEventListener {
      */
     public AcceptorModel getAcceptorModel() {
         return courier.getAcceptorModel();
+    }
+
+    /**
+     * Request the slave to perform a power cycle
+     * @since 1.2.4
+     */
+    public void requestReset(){
+        courier.requestReset();
     }
 
      /**

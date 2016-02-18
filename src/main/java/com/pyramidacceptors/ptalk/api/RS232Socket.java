@@ -42,8 +42,14 @@ final class RS232Socket {
      * start with a standard polling message<br>
      */
     RS232Socket() {}
-        
-    public byte[] generateCommand(CreditActions creditAction) {
+
+    /**
+     * Generates the next master command
+     * @param creditAction Credit action to take based upon last response
+     * @param resetRequested true to request that the slave reboot itself
+     * @return byte[] command to send to slave
+     */
+    public byte[] generateCommand(CreditActions creditAction, boolean resetRequested) {
         RS232Packet packet = new RS232Packet(base);
 
         if(RS232Configuration.INSTANCE.getAck())
@@ -56,22 +62,39 @@ final class RS232Socket {
         switch(creditAction)
         {
             case ACCEPT:
-                packet.or(4, (byte)0x20);                
+                packet.or(4, (byte)0x20);
                 break;
             case RETURN:
-                packet.or(4, (byte)0x40);                
+                packet.or(4, (byte)0x40);
                 break;
-            
-                
+
+
             case NONE:
             default:
                 packet.replace(4, (byte)0x00);
                 break;
         }
-        
+
+        if(resetRequested)
+        {
+            packet.or(2,(byte)0x40);
+            packet.replace(3, (byte)0x7F);
+            packet.replace(4, (byte)0x7F);
+            packet.replace(5, (byte)0x7F);
+        }
+
         // Checksum it
         packet.pack();
         return packet.toBytes();
+    }
+
+    /**
+     * Generates the next master command
+     * @param creditAction Credit action to take based upon last response
+     * @return byte[] command to send to slave
+     */
+    public byte[] generateCommand(CreditActions creditAction) {
+        return generateCommand(creditAction, false);
     } 
 
     public RS232Packet parseResponse(byte[] bytes) {
