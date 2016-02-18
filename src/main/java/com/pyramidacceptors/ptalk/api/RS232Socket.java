@@ -30,29 +30,20 @@ import org.apache.commons.collections4.queue.CircularFifoQueue;
  * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
  * @since 1.0.0.0
  */
-final class RS232Socket implements ISocket {
-    
-    enum CreditActions { ACCEPT, RETURN, NONE}
-    
+final class RS232Socket {
+
     private static final int MAX_PACKET_SIZE = 11;  
     //# basic message           0      1     2      3       4      5      6      7
     //                         start, len,  ack,  bills, escrow, resv'd, end, checksum
     private final byte[] base = new byte[]{0x02, 0x08, 0x10, 0x7F,  0x10,  0x00,  0x03};
-    // Can be dumped for debugging    
-    private final CircularFifoQueue<IPacket> debugQ;    
-    
-    private CreditActions creditAction = CreditActions.NONE;
-    
+
     /**
      * Generate a new RS-232 packet. By default, it is configured <br>
      * start with a standard polling message<br>
      */
-    RS232Socket() {
-        debugQ = new CircularFifoQueue<>();
-    } 
+    RS232Socket() {}
         
-    @Override
-    public byte[] generateCommand() {
+    public byte[] generateCommand(CreditActions creditAction) {
         RS232Packet packet = new RS232Packet(base);
 
         if(RS232Configuration.INSTANCE.getAck())
@@ -87,17 +78,10 @@ final class RS232Socket implements ISocket {
         return packet.toBytes();
     } 
 
-    @Override
-    public PTalkEvent parseResponse(byte[] bytes) {    
-        IPacket packet = new RS232Packet().parseAsNew(bytes);
-        creditAction = packet.getCreditAction();
-        PTalkEvent e = new PTalkEvent(this, packet.getBillName(), 
-                packet.getMessage(), packet.getInterpretedEvents());
-        debugQ.offer(packet);
-        return e;
+    public RS232Packet parseResponse(byte[] bytes) {
+        return new RS232Packet().parseAsNew(bytes);
     }
     
-    @Override
     public int getMaxPacketRespSize() {
         return MAX_PACKET_SIZE;
     }
