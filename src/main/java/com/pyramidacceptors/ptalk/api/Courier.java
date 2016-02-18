@@ -98,29 +98,11 @@ final class Courier extends Thread {
     }
 
     /**
-     * Returns the true firmware revisions value reported by the bill validator. Note that
-     * this is a 7-bit value (0-0x7F);
-     * @return byte
-     */
-    public byte getRawFirmwareRevision() {
-        return rawFirmwareRevision;
-    }
-
-    /**
      * Returns the acceptor model of the connected acceptor
      * @return
      */
     public AcceptorModel getAcceptorModel() {
         return AcceptorModel.fromByte(rawAcceptorModel);
-    }
-
-    /**
-     * Returns the true model value reported by the bill validator. Note that
-     * this is a 7-bit value (0-0x7F);
-     * @return byte
-     */
-    public byte getRawAcceptorModel() {
-        return rawAcceptorModel;
     }
 
     /**

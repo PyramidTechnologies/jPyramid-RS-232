@@ -119,6 +119,55 @@ public class CourierTest_Optional {
 
     }
 
+    @Test
+    public void testGetFirmwareRevision() throws Exception {
+        RS232Packet packet;
+        RS232Socket socket = new RS232Socket();
+
+        packet= socket.parseResponse(xorBytewise(new byte[]{0x02, 0x0B, 0x20, 0x01, 0x10, 0x00, 0x00, 0x00, 0x00, 0x03}));
+        assertTrue(packet.getFirmwareRevision() == (byte)0);
+
+        packet = socket.parseResponse(xorBytewise(new byte[]{0x02, 0x0B, 0x20, 0x01, 0x10, 0x00, 0x00, 0x00, 0x01, 0x03}));
+        assertTrue(packet.getFirmwareRevision() == (byte)1);
+
+        packet = socket.parseResponse(xorBytewise(new byte[]{0x02, 0x0B, 0x20, 0x01, 0x10, 0x00, 0x00, 0x00, 0x7F, 0x03}));
+        assertTrue(packet.getFirmwareRevision() == (byte)0x7F);
+    }
+
+
+    @Test
+    public void testGetAcceptorModel() throws Exception {
+        RS232Packet packet;
+        RS232Socket socket = new RS232Socket();
+
+        packet= socket.parseResponse(xorBytewise(new byte[]{0x02, 0x0B, 0x20, 0x01, 0x10, 0x00, 0x00, 0x00, 0x00, 0x03}));
+        assertTrue(packet.getAcceptorModel() == (byte)0);
+
+        packet = socket.parseResponse(xorBytewise(new byte[]{0x02, 0x0B, 0x20, 0x01, 0x10, 0x00, 0x00, 0x01, 0x00, 0x03}));
+        assertTrue(packet.getAcceptorModel() == (byte)1);
+
+        packet = socket.parseResponse(xorBytewise(new byte[]{0x02, 0x0B, 0x20, 0x01, 0x10, 0x00, 0x00, 0x7F, 0x0, 0x03}));
+        assertTrue(packet.getAcceptorModel() == (byte)0x7F);
+    }
+
+
+    /**
+     * Calculate 8-bit XOR on byte data skipping the STX and ETX bytes
+     * @param packet
+     * @return
+     */
+    private byte[] xorBytewise(byte[] packet) {
+        byte[] result = new byte[packet.length+1];
+        System.arraycopy(packet, 0, result, 0, packet.length);
+
+        byte checksum = packet[1];
+        for(int i=2; i<packet.length-1; i++) {
+            checksum ^= packet[i];
+        }
+        result[result.length-1] = checksum;
+        return result;
+    }
+
     class EventMonitor implements PTalkEventListener {
         @Override
         public void changeEventReceived(PTalkEvent evt) {

@@ -13,13 +13,13 @@ public enum AcceptorModel {
     //01
     Unknown("Unknown/Unsupported"), // Old firmware and models do not support this request and report 01
 
-    //10
+    //2
     Apex7400("Apex 7400"),
-    //11
+    //3
     Apex7600("Apex 7600"),
-    //12
+    //4
     Spectra("Spectra"),
-    //13
+    //5
     Trilogy("Trilogy");
 
     private final String name;
