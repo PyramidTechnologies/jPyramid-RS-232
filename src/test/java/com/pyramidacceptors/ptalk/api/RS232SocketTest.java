@@ -35,14 +35,14 @@ public class RS232SocketTest {
 
         // On startup, non-escrow mode, the first slave message should always be
         socket = new RS232Socket();
-        expected = new byte[]{ 0x02, 0x08, 0x10, 0x7F,  0x10,  0x00,  0x03, 0x77};
+        expected = new byte[]{ 0x02, 0x08, 0x10, 0x7F,  0x00,  0x00,  0x03, 0x67};
         actual = socket.generateCommand(CreditActions.NONE);
         assertArrayEquals(expected, actual);
 
         // On startup, escrow- mode, the first slave message should always be
         socket = new RS232Socket();
         RS232Configuration.INSTANCE.setEnabled(false);
-        expected = new byte[]{ 0x02, 0x08, 0x10, 0,  0x10,  0x00,  0x03, 0x08};
+        expected = new byte[]{ 0x02, 0x08, 0x10, 0,  0x00,  0x00,  0x03, 0x18};
         actual = socket.generateCommand(CreditActions.NONE);
         assertArrayEquals(expected, actual);
         RS232Configuration.INSTANCE.setEnabled(true);
@@ -50,21 +50,21 @@ public class RS232SocketTest {
         // On startup, we begin with an "even" toggle number. Run through a few times and ensure that this
         // value is in fact toggling.
         socket = new RS232Socket();
-        expected = new byte[]{ 0x02, 0x08, 0x10, 0x7F,  0x10,  0x00,  0x03, 0x77};
+        expected = new byte[]{ 0x02, 0x08, 0x10, 0x7F,  0x00,  0x00,  0x03, 0x67};
         actual = socket.generateCommand(CreditActions.NONE);
         assertArrayEquals(expected, actual);
 
         // Set to odd
         RS232Configuration.INSTANCE.toggleAck();
 
-        expected = new byte[]{ 0x02, 0x08, 0x11, 0x7F,  0x10,  0x00,  0x03, 0x76};
+        expected = new byte[]{ 0x02, 0x08, 0x11, 0x7F,  0x00,  0x00,  0x03, 0x66};
         actual = socket.generateCommand(CreditActions.NONE);
         assertArrayEquals(expected, actual);
 
         // Set to even
         RS232Configuration.INSTANCE.toggleAck();
 
-        expected = new byte[]{ 0x02, 0x08, 0x10, 0x7F,  0x10,  0x00,  0x03, 0x77};
+        expected = new byte[]{ 0x02, 0x08, 0x10, 0x7F,  0x00,  0x00,  0x03, 0x67};
         actual = socket.generateCommand(CreditActions.NONE);
         assertArrayEquals(expected, actual);
 
@@ -74,7 +74,7 @@ public class RS232SocketTest {
 
         // Simulate an accept message
         socket = new RS232Socket();
-        expected = new byte[]{ 0x02, 0x08, 0x10, 0x7F,  0x10,  0x00,  0x03, 0x77};
+        expected = new byte[]{ 0x02, 0x08, 0x10, 0x7F,  0x00,  0x00,  0x03, 0x67};
 
         // We have to simulate a slave message that would cause the master to generate an accept message
         // Set the escrow bit (4th byte, 3rd bit), credit bits (upper 5 bits of 5th byte)
@@ -87,17 +87,16 @@ public class RS232SocketTest {
 
         // Simulate a return message
         socket = new RS232Socket();
-        expected = new byte[]{ 0x02, 0x08, 0x10, 0x7F,  0x10,  0x00,  0x03, 0x77};
 
         // We have to simulate a slave message that would cause the master to generate an accept message
-        // Set the escrow bit (4th byte, 3rd bit), credit bits (upper 5 bits of 5th byte)
-        // Disable bill in config (e.g. only enable the $10 bill)
-        RS232Configuration.INSTANCE.setEnableMask(0x04);
+        // Set the credit bits to say $1
+        // Disable $1 via configuration
+        RS232Configuration.INSTANCE.setEnableMask(0x7E);
         byte[] returnThis = new byte[] {0x02, 0x0B, 0x20, 0x04, 0x00, 0x08, 0x00, 0x64, 0x64, 0x03, 0x27};
 
         RS232Packet resp = socket.parseResponse(returnThis);
         CreditActions creditAction = resp.getCreditAction();
-        expected = new byte[]{ 0x02, 0x08, 0x10, 0x04,  0x50,  0x00,  0x03, 0x4C};
+        expected = new byte[]{ 0x02, 0x08, 0x10, 0x7E,  0x50,  0x00,  0x03, 0x36};
         actual = socket.generateCommand(creditAction);
         assertArrayEquals(expected, actual);
     }

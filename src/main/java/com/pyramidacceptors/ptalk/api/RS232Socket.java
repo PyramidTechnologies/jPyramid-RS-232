@@ -65,13 +65,9 @@ final class RS232Socket {
                 
             case NONE:
             default:
-                packet.replace(4, (byte)0x10);
+                packet.replace(4, (byte)0x00);
                 break;
         }
-        
-        // Finally check if we are enabled
-        if(!RS232Configuration.INSTANCE.getEscrowMode())
-            packet.replace(4, (byte)0);
         
         // Checksum it
         packet.pack();
