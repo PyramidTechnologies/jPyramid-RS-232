@@ -79,7 +79,9 @@ public class CourierTest_Optional {
     public void testRun() throws Exception {
         if(testPort.length() > 0) {
             PyramidPort port = new PyramidPort.PortBuilder(testPort).build();
-            Courier c = new Courier(port, 50, new RS232Socket());
+
+            RS232Configuration.INSTANCE.setPollrate(50);
+            Courier c = new Courier(port, new RS232Socket());
 
 
             // Not yet running, comms should be okay

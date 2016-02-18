@@ -22,6 +22,7 @@ import com.pyramidacceptors.ptalk.api.event.PTalkEventListener;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.commons.collections4.queue.CircularFifoQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,26 +45,35 @@ final class Courier extends Thread {
     private boolean _comOkay = true;
     
     // Socket to handle all data IO with slave
-    private final ISocket socket;
-    
-    // Rate at which courier will poll slave
-    private final int pollRate;
+    private final RS232Socket socket;
     
     // EventListner list - threadsafe
     private final CopyOnWriteArrayList<PTalkEventListener> listeners;
-    
+
+    // Can be dumped for debugging
+    private final CircularFifoQueue<RS232Packet> debugQ;
+
+    private AcceptorModel acceptorModel;
+    private String firmwareRevision = "";
+
+    // Used in case the customer is not using a Pyramid validator.
+    private byte rawAcceptorModel;
+    private byte rawFirmwareRevision;
+
+    private CreditActions creditAction = CreditActions.NONE;
+
     /**
      * Create a new Courier instance<br>
      * <br>
      * @param port to deliver on and listen to
-     * @param pollRate delay between polls
      * @param socket type of packet that will be handled
      */
-    Courier(PyramidPort port, int pollRate, ISocket socket) {
+    Courier(PyramidPort port, RS232Socket socket) {
         this.port = port;
-        this.pollRate = pollRate;
-        this.listeners = new CopyOnWriteArrayList<>();        
+        this.listeners = new CopyOnWriteArrayList<>();
         this.socket = socket;
+
+        debugQ = new CircularFifoQueue<>();
     }
     
     /**     
@@ -76,6 +86,41 @@ final class Courier extends Thread {
      */
     boolean getCommsOkay() {
         return this._comOkay;
+    }
+
+
+    /**
+     * Returns the firmware revision of the connected acceptor.
+     * @return
+     */
+    public String getFirmwareRevision() {
+        return String.format("1.%02x", rawFirmwareRevision & 0xff);
+    }
+
+    /**
+     * Returns the true firmware revisions value reported by the bill validator. Note that
+     * this is a 7-bit value (0-0x7F);
+     * @return byte
+     */
+    public byte getRawFirmwareRevision() {
+        return rawFirmwareRevision;
+    }
+
+    /**
+     * Returns the acceptor model of the connected acceptor
+     * @return
+     */
+    public AcceptorModel getAcceptorModel() {
+        return AcceptorModel.fromByte(rawAcceptorModel);
+    }
+
+    /**
+     * Returns the true model value reported by the bill validator. Note that
+     * this is a 7-bit value (0-0x7F);
+     * @return byte
+     */
+    public byte getRawAcceptorModel() {
+        return rawAcceptorModel;
     }
 
     /**
@@ -118,7 +163,7 @@ final class Courier extends Thread {
         this._stopThread.set(true);
         port = null;
     }
-    
+
     /**
      * Start the courier thread. Poll in intervals determined by the poll<br>
      * rate passed to this instance's constructor.
@@ -128,22 +173,40 @@ final class Courier extends Thread {
         
         // Loop until we receive client calls the stop thread method
         PTalkEvent e;
+        RS232Packet respPacket;
+        byte[] command;
+        byte[] resp;
+
         while(!_stopThread.get()) {
             
             try {
     
                 // Generate command and send to slave
-                port.write(socket.generateCommand());
+                command = socket.generateCommand(creditAction);
+                port.write(command);
                 
                 // Collect the response
-                e = socket.parseResponse(port.readBytes(
-                        socket.getMaxPacketRespSize()));
-               
+                resp = port.readBytes(socket.getMaxPacketRespSize());
+                respPacket = socket.parseResponse(resp);
+
+                creditAction = respPacket.getCreditAction();
+
+                rawFirmwareRevision = respPacket.getFirmwareRevision();
+                rawAcceptorModel = respPacket.getAcceptorModel();
+
+                e = new PTalkEvent(
+                        this,
+                        respPacket.getBillName(),
+                        respPacket.getMessage(),
+                        respPacket.getInterpretedEvents());
+
+                debugQ.offer(respPacket);
+
                 // Notify any listeners that we have data
                 fireChangeEvent(e);                      
                 
                 // Wait for pollRate milliseconds before looping through again
-                sleep(pollRate);
+                sleep(RS232Configuration.INSTANCE.getPollrate());
                        
             } catch (SerialPortException ex) {
                 logger.error(ex.getMessage());
