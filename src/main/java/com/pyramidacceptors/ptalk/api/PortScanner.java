@@ -38,7 +38,7 @@ class PortScanner {
         String portName = "";
         PyramidPort port;
         Courier courier;
-        ISocket socket = new RS232Socket();
+        RS232Socket socket = new RS232Socket();
 
         // Get all currently available ports
         String[] availablePorts = PyramidPort.getPortList();
@@ -47,7 +47,8 @@ class PortScanner {
 
             try {
                 port = new PyramidPort.PortBuilder(p).build();
-                courier = new Courier(port, 100, socket);
+                RS232Configuration.INSTANCE.setPollrate(100);
+                courier = new Courier(port, socket);
                 courier.start();
                 
                 // Wait for 10 polls before querying comm status

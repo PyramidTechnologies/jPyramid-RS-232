@@ -17,9 +17,8 @@
 
 package com.pyramidacceptors.ptalk.api;
 
-import static com.pyramidacceptors.ptalk.api.RS232Socket.CreditActions.*;
+import static com.pyramidacceptors.ptalk.api.CreditActions.*;
 
-import com.pyramidacceptors.ptalk.api.RS232Socket.CreditActions;
 import com.pyramidacceptors.ptalk.api.event.Events;
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -33,13 +32,12 @@ import java.util.Objects;
  */
 
 /**
- * {@inheritDoc}<br>
- * Represents a command or response packet for the RS232 bill validation<br>
- * interface.
- * 
+ * Packet is a data structure that represents a serial byte stream. Packets <br>
+ * have functions that include validation, packaging, and parsing.
+ *
  * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
  */
-final class RS232Packet implements IPacket{
+class RS232Packet {
     
     private final List<Byte> data = new ArrayList<>();    
     private final EnumSet<Events> event = EnumSet.noneOf(Events.class);
@@ -47,6 +45,9 @@ final class RS232Packet implements IPacket{
     private CreditActions creditAction = NONE;
     private String message = "";
     private BillNames billName;
+
+    private byte firmwareRevision;
+    private byte acceptorModel;
 
     public static final String NO_RESPONSE = "No Response";
     public static final String BAD_MESSAGE_LENGTH = "Bad Message Length";
@@ -71,9 +72,11 @@ final class RS232Packet implements IPacket{
     }
 
     /**
-     * {@inheritDoc}
+     * Assert that this packet is of proper structure and matches<br>
+     * checksum<br>.
+     * <br>
+     * @return true is valid, otherwise false
      */
-    @Override
     public boolean isValid() {
         if(data.size() != 11)
             return false;
@@ -84,19 +87,17 @@ final class RS232Packet implements IPacket{
         }        
         return (checksum == data.get(10));     
     }
-    
+
     /**
-     * {@inheritDoc}
-     */    
-    @Override
+     * @return a space delimited string of the bytes in this packet
+     */
     public String getByteString() {
         return byteListToString(data);
     }
 
     /**
-     * {@inheritDoc}
-     */    
-    @Override
+     * @return byte[] of this packet in its current state
+     */
     public byte[] toBytes() {
         byte[] o = new byte[data.size()];
         for(int i=0; i<data.size(); i++)
@@ -105,27 +106,25 @@ final class RS232Packet implements IPacket{
     }
 
     /**
-     * {@inheritDoc}
+     *  @return the length in bytes of this packet
      */    
-    @Override
     public int size() {
         return data.size();
     }
-    
+
     /**
-     * {@inheritDoc}
-     * @throws IndexOutOfBoundsException if index is outside packet bounds
-     */    
-    @Override
+     * @return byte at given index
+     */
     public byte get(int index) {
         return data.get(index);
     }
 
     /**
-     * {@inheritDoc}
-     */    
-    @Override
-    public IPacket pack() {
+     * Performs checksum and any other enveloping required by <br>
+     * the protocol.
+     * @return RS232Packet a reference to this RS232Packet
+     */
+    public RS232Packet pack() {
         byte checksum = (byte)(data.get(1) ^ data.get(2));
         for(int i=3;i<data.size()-1;i++) {
             checksum ^= data.get(i);
@@ -135,20 +134,25 @@ final class RS232Packet implements IPacket{
     }
 
     /**
-     * {@inheritDoc}
-     */    
-    @Override
+     * Replaces the Object at {@code index} with the value {@code b}. If <br>
+     * {@code index} is invalid or {@code b} is invalid, this returns false.
+     * @param index of element to replace
+     * @param b element to replace current item with
+     * @return true on success
+     */
     public boolean replace(int index, byte b) {
         if(index < 0 || index > (this.data.size()-1))
             return false;
         this.data.set(index, b);
         return true;
     }
-    
+
     /**
-     * {@inheritDoc}
-     */    
-    @Override
+     * Logical OR the byte at the given index
+     * @param index of byte to OR
+     * @param b byte to OR with
+     * @return true on success
+     */
     public boolean or(int index, byte b) {
         if(index < 0 || index > (this.data.size()-1))
             return false;
@@ -158,10 +162,11 @@ final class RS232Packet implements IPacket{
     }
 
     /**
-     * {@inheritDoc}
-     */    
-    @Override
-    public IPacket parseAsNew(byte[] bytes) {
+     * Parse the given byte array as a new packet.
+     * @param bytes to parse
+     * @return new, fully parsed RS232Packet
+     */
+    public RS232Packet parseAsNew(byte[] bytes) {
         for(byte b : bytes)
             this.data.add(b);
 
@@ -240,7 +245,14 @@ final class RS232Packet implements IPacket{
                 event.add(Events.Credit);
                 billName = BillNames.fromByte(credit);    
             }
-               
+
+
+            // Get model of acceptor
+            acceptorModel = data.get(7);
+
+            // Get revision of firmware
+            firmwareRevision = data.get(8);
+
             // Else set the informative error message!
         } else {
             if(data.size() != 11)
@@ -253,24 +265,86 @@ final class RS232Packet implements IPacket{
     }
 
     /**
-     * {@inheritDoc}
-     */    
-    @Override
+     * Returns the event, state, and message flags associated with this packet
+     * @return EnumSet of all events enabled or signaled by this packet
+     */
     public EnumSet<Events> getInterpretedEvents() {
         return this.event;
     }
 
     /**
-     * {@inheritDoc}
-     */    
-    @Override
+     * Get any message associated with this packet as a string
+     * @return string
+     */
     public String getMessage() {
         if(this.message.equals("") && (billName != null))
             return this.billName.toString();
         else
             return this.message;
     }
-    
+
+    /**
+     * Returns the firmware revision as reported by the slave. The revision
+     * is in the format Major.minor. e.g. 1.11
+     * @return string
+     */
+    public byte getFirmwareRevision() {
+        return this.firmwareRevision;
+    }
+
+    /**
+     * Return the model code as reported by the slave. The model is
+     * an encoded AcceptorModel enum.
+     * @return byte
+     */
+    public byte getAcceptorModel() {
+        return this.acceptorModel;
+    }
+
+    /**
+     * @return true is the parsed packet was a valid credit
+     */
+    public CreditActions getCreditAction() {
+        return this.creditAction;
+    }
+
+    /**
+     * @return the name of the bill credited. e.g. Bill1
+     */
+    public BillNames getBillName() {
+        return this.billName;
+    }
+
+    /**
+     * Integer Sum of all bytes in the bytes list
+     * @param d
+     * @return
+     */
+    private int sum(List<Byte> d) {
+        Integer sum= 0;
+        for (byte i:d)
+            sum+=i;
+        return sum;
+    }
+
+    /**
+     * Create a new string from the given byte list.
+     * @param l byte list to convert
+     * @return string representation of byte list
+     */
+    private String byteListToString(List<Byte> l) {
+        if (l == null || l.isEmpty()) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder();
+        for (Byte b : l) {
+            sb.append(String.format(", 0x%02X", b));
+        }
+        String result = sb.toString();
+        // We don't want that leading comma
+        return result.substring(1, result.length()).trim();
+    }
+
     /**
      * {@inheritDoc}
      */    
@@ -296,7 +370,7 @@ final class RS232Packet implements IPacket{
         if(!(object instanceof RS232Packet))
             return false;
         
-        RS232Packet cmp = new RS232Packet(((IPacket)object).toBytes());
+        RS232Packet cmp = new RS232Packet(((RS232Packet)object).toBytes());
         if(data.size() != cmp.size())
             return false;
         
@@ -318,52 +392,6 @@ final class RS232Packet implements IPacket{
         hash = 43 * hash + Objects.hashCode(this.event);
         hash = 43 * hash + Objects.hashCode(this.message);
         return hash;
-    }
-    
-    /**    
-     * @return true is the parsed packet was a valid credit
-     */
-    @Override
-    public CreditActions getCreditAction() {
-        return this.creditAction;
-    }
-    
-    /**
-     * {@inheritDoc}
-     */    
-    @Override
-    public BillNames getBillName() {
-        return this.billName;
-    }
-    
-     /**
-     * Integer Sum of all bytes in the bytes list
-     * @param d
-     * @return 
-     */
-    private int sum(List<Byte> d) {
-        Integer sum= 0; 
-        for (byte i:d)
-            sum+=i;
-        return sum;
-    }
-    
-    /**
-     * Create a new string from the given byte list.
-     * @param l byte list to convert
-     * @return string representation of byte list
-     */
-    private String byteListToString(List<Byte> l) {
-        if (l == null || l.isEmpty()) {
-            return "";
-        }
-        StringBuilder sb = new StringBuilder();
-        for (Byte b : l) {
-            sb.append(String.format(", 0x%02X", b));
-        }
-        String result = sb.toString();
-        // We don't want that leading comma
-        return result.substring(1, result.length()).trim();
     }
 
 }

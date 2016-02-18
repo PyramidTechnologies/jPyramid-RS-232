@@ -26,24 +26,47 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
  * @since 1.0.0.0
  */
-public enum RS232Configuration implements IConfiguration {
+public enum RS232Configuration {
 
     /**
      *Instance is singleton of RS232Configuration. This contains<br>
      * all state, event, and error information pertaining to the attached slave.
      */
     INSTANCE;
-    
+
+    private final int POLL_RATE_MAX = 5000;     // Set max to 5 seconds
+
     private boolean _ack = false;
     private final AtomicBoolean _escrowmode 
-            = new AtomicBoolean(true);          // Set to false to disable escrow
+            = new AtomicBoolean(false);         // Set to false to disable escrow
     private int _edMask = 0x7F;                 // All bills enabled by default
     private int _edMask_bak = 0x7F;             // Backup mask in case user uses setEnabled(false)
     private int _evMask = 0xFF;                 // All events enabled by default
-    private final byte _orientation = 0x00;     // Not used at this time
-    private final byte _security = 0x00;        // Not used at this time
-    
-        
+    private int _pollRate = 100;                // Default poll rate is milliseconds
+
+
+    /**
+     * Returns the current poll rate is milliseconds. This is the rate at which
+     * the master will query the slave.
+     * @return int
+     */
+    public int getPollrate() {
+        return _pollRate;
+    }
+
+    /**
+     * Sets the pollrate in . his is the rate at which
+     * the master is querying the slave.
+     * @param pollrate integer poll rate
+     */
+    public boolean setPollrate(int pollrate) {
+        if(pollrate < 0 || pollrate > POLL_RATE_MAX)
+            return false;
+
+        this._pollRate = pollrate;
+        return true;
+    }
+
     /**    
      * @return true if ACK requires toggling
      */
@@ -54,9 +77,8 @@ public enum RS232Configuration implements IConfiguration {
     void toggleAck() { this._ack = !this._ack; }
 
     /**
-     * {@inheritDoc} 
+     * @return  the current event mask
      */
-    @Override
     public int getEventMask() {
         return this._evMask;
     }
@@ -68,42 +90,60 @@ public enum RS232Configuration implements IConfiguration {
     public int getEnableMask() {
         return this._edMask;
     }
-    
+
     /**
-     * {@inheritDoc} 
-     */    
-    @Override
+     * Events are the foundation of the PTalk, event driven API. As a client,<br>
+     * you are able to select which events (interface dependent) you want<br>
+     * notification for.
+     * The mask is a bitwise integer where 1 indicates active and indicates <br>
+     * inactive.
+     * @param mask  bitwise event mask
+     * @see com.pyramidacceptors.ptalk.api.RS232Configuration.RS232State for bit indicies
+     */
     public void setEventMask(int mask) {
        this._evMask = mask;
     }
 
     /**
-     * {@inheritDoc} 
-     */    
-    @Override
+     * Serial Protocol often allow for the enable/disable of bills or other <br>
+     * features via a bit mask. This implementation supports an integer mask <br>
+     * where 1 indicates the feature is enabled and 0 indicates that it is<br>
+     * disabled.
+     * @param mask bitwise enable/disable mask. Set bit position to 1 to enable, 0 to disable.
+     */
     public void setEnableMask(int mask) {
         this._edMask = this._edMask_bak = mask;
     }
 
 
-    @Override
+    /**
+     * Enables or disables the bill acceptor. If disabled. the master will still be able to poll
+     * and receive status messages from the slave but acceptance is disabled.
+     * @param enabled
+     */
     public void setEnabled(boolean enabled)
     {
         this._edMask = (enabled) ? this._edMask_bak : 0;
     }
 
+
     /**
-     * {@inheritDoc} 
-     */    
-    @Override
+     * Enable or disable escrow mode on the slave device. This puts the host
+     * in charge of giving the final accept/reject command.
+     *
+     * This feature is not correctly implemented so it has been disabled. It was originally
+     * based off of a broken VB implementation which did not align with the specs.
+     * @param enable true will enable the device, false will disable
+     */
     public void setEscrowMode(boolean enable) {
+        /*
         this._escrowmode.set(enable);
+        */
     }
-    
+
     /**
-     * {@inheritDoc} 
-     */    
-    @Override
+     * @return true if the device is in escrow mode, otherwise false
+     */
     public boolean getEscrowMode() {
         return this._escrowmode.get();
     }    

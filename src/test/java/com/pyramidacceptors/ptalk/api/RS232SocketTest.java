@@ -35,46 +35,46 @@ public class RS232SocketTest {
 
         // On startup, non-escrow mode, the first slave message should always be
         socket = new RS232Socket();
-        expected = new byte[]{ 0x02, 0x08, 0x10, 0x7F,  0x10,  0x00,  0x03, 0x77};
-        actual = socket.generateCommand();
+        expected = new byte[]{ 0x02, 0x08, 0x10, 0x7F,  0x00,  0x00,  0x03, 0x67};
+        actual = socket.generateCommand(CreditActions.NONE);
         assertArrayEquals(expected, actual);
 
         // On startup, escrow- mode, the first slave message should always be
         socket = new RS232Socket();
         RS232Configuration.INSTANCE.setEnabled(false);
-        expected = new byte[]{ 0x02, 0x08, 0x10, 0,  0x10,  0x00,  0x03, 0x08};
-        actual = socket.generateCommand();
+        expected = new byte[]{ 0x02, 0x08, 0x10, 0,  0x00,  0x00,  0x03, 0x18};
+        actual = socket.generateCommand(CreditActions.NONE);
         assertArrayEquals(expected, actual);
         RS232Configuration.INSTANCE.setEnabled(true);
 
         // On startup, we begin with an "even" toggle number. Run through a few times and ensure that this
         // value is in fact toggling.
         socket = new RS232Socket();
-        expected = new byte[]{ 0x02, 0x08, 0x10, 0x7F,  0x10,  0x00,  0x03, 0x77};
-        actual = socket.generateCommand();
+        expected = new byte[]{ 0x02, 0x08, 0x10, 0x7F,  0x00,  0x00,  0x03, 0x67};
+        actual = socket.generateCommand(CreditActions.NONE);
         assertArrayEquals(expected, actual);
 
         // Set to odd
         RS232Configuration.INSTANCE.toggleAck();
 
-        expected = new byte[]{ 0x02, 0x08, 0x11, 0x7F,  0x10,  0x00,  0x03, 0x76};
-        actual = socket.generateCommand();
+        expected = new byte[]{ 0x02, 0x08, 0x11, 0x7F,  0x00,  0x00,  0x03, 0x66};
+        actual = socket.generateCommand(CreditActions.NONE);
         assertArrayEquals(expected, actual);
 
         // Set to even
         RS232Configuration.INSTANCE.toggleAck();
 
-        expected = new byte[]{ 0x02, 0x08, 0x10, 0x7F,  0x10,  0x00,  0x03, 0x77};
-        actual = socket.generateCommand();
+        expected = new byte[]{ 0x02, 0x08, 0x10, 0x7F,  0x00,  0x00,  0x03, 0x67};
+        actual = socket.generateCommand(CreditActions.NONE);
         assertArrayEquals(expected, actual);
 
         // Do not toggle, we should still be even!
-        actual = socket.generateCommand();
+        actual = socket.generateCommand(CreditActions.NONE);
         assertArrayEquals(expected, actual);
 
         // Simulate an accept message
         socket = new RS232Socket();
-        expected = new byte[]{ 0x02, 0x08, 0x10, 0x7F,  0x10,  0x00,  0x03, 0x77};
+        expected = new byte[]{ 0x02, 0x08, 0x10, 0x7F,  0x00,  0x00,  0x03, 0x67};
 
         // We have to simulate a slave message that would cause the master to generate an accept message
         // Set the escrow bit (4th byte, 3rd bit), credit bits (upper 5 bits of 5th byte)
@@ -82,22 +82,22 @@ public class RS232SocketTest {
 
         socket.parseResponse(acceptThis);
         expected = new byte[]{ 0x02, 0x08, 0x11, 0x7F,  0x30,  0x00,  0x03, 0x56};
-        actual = socket.generateCommand();
+        actual = socket.generateCommand(CreditActions.ACCEPT);
         assertArrayEquals(expected, actual);
 
         // Simulate a return message
         socket = new RS232Socket();
-        expected = new byte[]{ 0x02, 0x08, 0x10, 0x7F,  0x10,  0x00,  0x03, 0x77};
 
         // We have to simulate a slave message that would cause the master to generate an accept message
-        // Set the escrow bit (4th byte, 3rd bit), credit bits (upper 5 bits of 5th byte)
-        // Disable bill in config (e.g. only enable the $10 bill)
-        RS232Configuration.INSTANCE.setEnableMask(0x04);
+        // Set the credit bits to say $1
+        // Disable $1 via configuration
+        RS232Configuration.INSTANCE.setEnableMask(0x7E);
         byte[] returnThis = new byte[] {0x02, 0x0B, 0x20, 0x04, 0x00, 0x08, 0x00, 0x64, 0x64, 0x03, 0x27};
 
-        socket.parseResponse(returnThis);
-        expected = new byte[]{ 0x02, 0x08, 0x10, 0x04,  0x50,  0x00,  0x03, 0x4C};
-        actual = socket.generateCommand();
+        RS232Packet resp = socket.parseResponse(returnThis);
+        CreditActions creditAction = resp.getCreditAction();
+        expected = new byte[]{ 0x02, 0x08, 0x10, 0x7E,  0x50,  0x00,  0x03, 0x36};
+        actual = socket.generateCommand(creditAction);
         assertArrayEquals(expected, actual);
     }
 
@@ -108,11 +108,19 @@ public class RS232SocketTest {
     @Test
     public void testIdleState() throws Exception {
         PTalkEvent event;
+        RS232Packet respPacket;
         byte[] parseThis;
 
         // There should only be 1 event and it should be Idling
         parseThis = xorBytewise(new byte[]{0x02, 0x0B, 0x20, 0x01, 0x10, 0x00, 0x00, 0x00, 0x00, 0x03});
-        event = new RS232Socket().parseResponse(parseThis);
+
+        respPacket = new RS232Socket().parseResponse(parseThis);
+        event = new PTalkEvent(
+                this,
+                respPacket.getBillName(),
+                respPacket.getMessage(),
+                respPacket.getInterpretedEvents());
+
         assertThat(true, is(event.getEventId().contains(Idling)));
         assertThat(1, is(event.getEventId().size()));
     }
@@ -124,11 +132,19 @@ public class RS232SocketTest {
     @Test
     public void testAcceptingState() throws Exception {
         PTalkEvent event;
+        RS232Packet respPacket;
         byte[] parseThis;
 
         // There should only be 1 event and it should be Accepting
         parseThis = xorBytewise(new byte[]{0x02, 0x0B, 0x20, 0x02, 0x10, 0x00, 0x00, 0x00, 0x00, 0x03});
-        event = new RS232Socket().parseResponse(parseThis);
+
+        respPacket = new RS232Socket().parseResponse(parseThis);
+        event = new PTalkEvent(
+                this,
+                respPacket.getBillName(),
+                respPacket.getMessage(),
+                respPacket.getInterpretedEvents());
+
         assertThat(true, is(event.getEventId().contains(Accepting)));
         assertThat(1, is(event.getEventId().size()));
     }
@@ -140,10 +156,18 @@ public class RS232SocketTest {
     @Test
     public void testEscrowedState() throws Exception {
         PTalkEvent event;
+        RS232Packet respPacket;
         byte[] parseThis;
+
         // There should only be 1 event and it should be Escrowed
         parseThis = xorBytewise(new byte[]{0x02, 0x0B, 0x20, 0x04, 0x10, 0x00, 0x00, 0x00, 0x00, 0x03});
-        event = new RS232Socket().parseResponse(parseThis);
+        respPacket = new RS232Socket().parseResponse(parseThis);
+        event = new PTalkEvent(
+                this,
+                respPacket.getBillName(),
+                respPacket.getMessage(),
+                respPacket.getInterpretedEvents());
+
         assertThat(true, is(event.getEventId().contains(Escrowed)));
         assertThat(1, is(event.getEventId().size()));
     }
@@ -155,11 +179,18 @@ public class RS232SocketTest {
     @Test
     public void testStackingState() throws Exception {
         PTalkEvent event;
+        RS232Packet respPacket;
         byte[] parseThis;
 
         // There should only be 1 event and it should be Stacking
         parseThis = xorBytewise(new byte[]{0x02, 0x0B, 0x20, 0x08, 0x10, 0x00, 0x00, 0x00, 0x00, 0x03});
-        event = new RS232Socket().parseResponse(parseThis);
+        respPacket = new RS232Socket().parseResponse(parseThis);
+        event = new PTalkEvent(
+                this,
+                respPacket.getBillName(),
+                respPacket.getMessage(),
+                respPacket.getInterpretedEvents());
+
         assertThat(true, is(event.getEventId().contains(Stacking)));
         assertThat(1, is(event.getEventId().size()));
     }
@@ -175,10 +206,17 @@ public class RS232SocketTest {
     @Test
     public void testStackedEvent() throws Exception {
         PTalkEvent event;
+        RS232Packet respPacket;
         byte[] parseThis;
 
         parseThis = xorBytewise(new byte[]{0x02, 0x0B, 0x20, 0x11, 0x10, 0x00, 0x00, 0x00, 0x00, 0x03});
-        event = new RS232Socket().parseResponse(parseThis);
+        respPacket = new RS232Socket().parseResponse(parseThis);
+        event = new PTalkEvent(
+                this,
+                respPacket.getBillName(),
+                respPacket.getMessage(),
+                respPacket.getInterpretedEvents());
+
         assertThat(true, is(event.getEventId().contains(Stacked)));
         assertThat(true, is(event.getEventId().contains(Idling)));
         assertThat(true, is(event.getEventId().contains(Credit)));
@@ -192,11 +230,18 @@ public class RS232SocketTest {
     @Test
     public void testReturningState() throws Exception {
         PTalkEvent event;
+        RS232Packet respPacket;
         byte[] parseThis;
 
         // There should only be 1 event and it should be Returning
         parseThis = xorBytewise(new byte[]{0x02, 0x0B, 0x20, 0x20, 0x10, 0x00, 0x00, 0x00, 0x00, 0x03});
-        event = new RS232Socket().parseResponse(parseThis);
+        respPacket = new RS232Socket().parseResponse(parseThis);
+        event = new PTalkEvent(
+                this,
+                respPacket.getBillName(),
+                respPacket.getMessage(),
+                respPacket.getInterpretedEvents());
+
         assertThat(true, is(event.getEventId().contains(Returning)));
         assertThat(1, is(event.getEventId().size()));
     }
@@ -209,10 +254,18 @@ public class RS232SocketTest {
     @Test
     public void testReturnedEvent() throws Exception {
         PTalkEvent event;
+        RS232Packet respPacket;
         byte[] parseThis;
+
         // There should be two events, returned and Idling
         parseThis = xorBytewise(new byte[]{0x02, 0x0B, 0x20, 0x41, 0x10, 0x00, 0x00, 0x00, 0x00, 0x03});
-        event = new RS232Socket().parseResponse(parseThis);
+        respPacket = new RS232Socket().parseResponse(parseThis);
+        event = new PTalkEvent(
+                this,
+                respPacket.getBillName(),
+                respPacket.getMessage(),
+                respPacket.getInterpretedEvents());
+
         assertThat(true, is(event.getEventId().contains(Returned)));
         assertThat(true, is(event.getEventId().contains(Idling)));
         assertThat(2, is(event.getEventId().size()));
@@ -226,10 +279,18 @@ public class RS232SocketTest {
     @Test
     public void testPowerUpEvent() throws Exception {
         PTalkEvent event;
+        RS232Packet respPacket;
         byte[] parseThis;
+
         // There should one event, power up
         parseThis = xorBytewise(new byte[]{0x02, 0x0B, 0x20, 0x00, 0x10, 0x01, 0x00, 0x00, 0x00, 0x03});
-        event = new RS232Socket().parseResponse(parseThis);
+        respPacket = new RS232Socket().parseResponse(parseThis);
+        event = new PTalkEvent(
+                this,
+                respPacket.getBillName(),
+                respPacket.getMessage(),
+                respPacket.getInterpretedEvents());
+
         assertThat(true, is(event.getEventId().contains(PowerUp)));
         assertThat(1, is(event.getEventId().size()));
 
@@ -242,10 +303,18 @@ public class RS232SocketTest {
     @Test
     public void testInvalidCommandEvent() throws Exception {
         PTalkEvent event;
+        RS232Packet respPacket;
         byte[] parseThis;
+
         // There should one event, power up
         parseThis = xorBytewise(new byte[]{0x02, 0x0B, 0x20, 0x00, 0x10, 0x02, 0x00, 0x00, 0x00, 0x03});
-        event = new RS232Socket().parseResponse(parseThis);
+        respPacket = new RS232Socket().parseResponse(parseThis);
+        event = new PTalkEvent(
+                this,
+                respPacket.getBillName(),
+                respPacket.getMessage(),
+                respPacket.getInterpretedEvents());
+
         assertThat(true, is(event.getEventId().contains(InvalidCommand)));
         assertThat(1, is(event.getEventId().size()));
 
@@ -258,10 +327,18 @@ public class RS232SocketTest {
     @Test
     public void testFailureEvent() throws Exception {
         PTalkEvent event;
+        RS232Packet respPacket;
         byte[] parseThis;
+
         // There should one event, power up
         parseThis = xorBytewise(new byte[]{0x02, 0x0B, 0x20, 0x00, 0x10, 0x04, 0x00, 0x00, 0x00, 0x03});
-        event = new RS232Socket().parseResponse(parseThis);
+        respPacket = new RS232Socket().parseResponse(parseThis);
+        event = new PTalkEvent(
+                this,
+                respPacket.getBillName(),
+                respPacket.getMessage(),
+                respPacket.getInterpretedEvents());
+
         assertThat(true, is(event.getEventId().contains(Failure)));
         assertThat(1, is(event.getEventId().size()));
     }
@@ -273,10 +350,18 @@ public class RS232SocketTest {
     @Test
     public void testCashboxRemovedEvent() throws Exception {
         PTalkEvent event;
+        RS232Packet respPacket;
         byte[] parseThis;
+
         // There should one event, power up
         parseThis = xorBytewise(new byte[]{0x02, 0x0B, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03});
-        event = new RS232Socket().parseResponse(parseThis);
+        respPacket = new RS232Socket().parseResponse(parseThis);
+        event = new PTalkEvent(
+                this,
+                respPacket.getBillName(),
+                respPacket.getMessage(),
+                respPacket.getInterpretedEvents());
+
         assertThat(true, is(event.getEventId().contains(BillCasetteRemoved)));
         assertThat(1, is(event.getEventId().size()));
     }
@@ -289,11 +374,18 @@ public class RS232SocketTest {
     @Test
     public void testCreditEvents() throws Exception {
         PTalkEvent event;
+        RS232Packet respPacket;
         byte[] parseThis;
 
         for(int credit=1; credit<8; credit++) {
             parseThis = xorBytewise(new byte[]{0x02, 0x0B, 0x20, 0x11, 0x10, (byte)(credit<<3), 0x00, 0x00, 0x00, 0x03});
-            event = new RS232Socket().parseResponse(parseThis);
+            respPacket = new RS232Socket().parseResponse(parseThis);
+            event = new PTalkEvent(
+                    this,
+                    respPacket.getBillName(),
+                    respPacket.getMessage(),
+                    respPacket.getInterpretedEvents());
+
             assertThat(true, is(event.getEventId().contains(Stacked)));
             assertThat(true, is(event.getEventId().contains(Idling)));
             assertThat(true, is(event.getEventId().contains(Credit)));
@@ -309,6 +401,7 @@ public class RS232SocketTest {
     @Test
     public void testEventParse() throws Exception {
         PTalkEvent event;
+        RS232Packet respPacket;
 
         //////
         //
@@ -336,7 +429,14 @@ public class RS232SocketTest {
                 byte[] temp = new byte[base.length];
 
                 System.arraycopy(base, 0, temp, 0, base.length);
-                event = new RS232Socket().parseResponse(xorBytewise(temp));
+
+                respPacket = new RS232Socket().parseResponse(xorBytewise(temp));
+                event = new PTalkEvent(
+                        this,
+                        respPacket.getBillName(),
+                        respPacket.getMessage(),
+                        respPacket.getInterpretedEvents());
+
                 assertThat(true, is(event.getEventId().contains(eventMap.get(eventMask))));
 
                 // Left shift to get next state
@@ -357,7 +457,13 @@ public class RS232SocketTest {
                 byte[] temp = new byte[base.length];
 
                 System.arraycopy(base, 0, temp, 0, base.length);
-                event = new RS232Socket().parseResponse(xorBytewise(temp));
+                respPacket = new RS232Socket().parseResponse(xorBytewise(temp));
+                event = new PTalkEvent(
+                        this,
+                        respPacket.getBillName(),
+                        respPacket.getMessage(),
+                        respPacket.getInterpretedEvents());
+
                 assertThat(true, is(event.getEventId().contains(eventMap.get(eventMask))));
 
                 base[4]++;

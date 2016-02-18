@@ -317,7 +317,7 @@ public class RS232PacketTest {
 
 
         // Non-instances must not be equal
-        assertThat(true, is(not(packet.equals(IPacket.class))));
+        assertThat(true, is(not(packet.equals(RS232Packet.class))));
 
         // Unlike packets should not be equal
         packet = new RS232Packet(good);
