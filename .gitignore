@@ -7,3 +7,4 @@ production/
 .idea/
 target/
 *.iml
+gradlew
