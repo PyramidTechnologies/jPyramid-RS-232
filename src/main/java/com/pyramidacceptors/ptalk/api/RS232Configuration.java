@@ -38,7 +38,7 @@ public enum RS232Configuration {
 
     private boolean _ack = false;
     private final AtomicBoolean _escrowmode 
-            = new AtomicBoolean(true);          // Set to false to disable escrow
+            = new AtomicBoolean(false);         // Set to false to disable escrow
     private int _edMask = 0x7F;                 // All bills enabled by default
     private int _edMask_bak = 0x7F;             // Backup mask in case user uses setEnabled(false)
     private int _evMask = 0xFF;                 // All events enabled by default
@@ -130,10 +130,15 @@ public enum RS232Configuration {
     /**
      * Enable or disable escrow mode on the slave device. This puts the host
      * in charge of giving the final accept/reject command.
+     *
+     * This feature is not correctly implemented so it has been disabled. It was originally
+     * based off of a broken VB implementation which did not align with the specs.
      * @param enable true will enable the device, false will disable
      */
     public void setEscrowMode(boolean enable) {
+        /*
         this._escrowmode.set(enable);
+        */
     }
 
     /**
