@@ -37,6 +37,7 @@ final class RS232Socket {
     //                         start, len,  ack,  bills, escrow, resv'd, end, checksum
     private final byte[] base = new byte[]{0x02, 0x08, 0x10, 0x7F,  0x10,  0x00,  0x03};
 
+    private final byte[] reset = new byte[]{0x02, 0x08, 0x60, 0x7f, 0x7f,  0x7f,  0x03};
     /**
      * Generate a new RS-232 packet. By default, it is configured <br>
      * start with a standard polling message<br>
@@ -50,10 +51,22 @@ final class RS232Socket {
      * @return byte[] command to send to slave
      */
     public byte[] generateCommand(CreditActions creditAction, boolean resetRequested) {
-        RS232Packet packet = new RS232Packet(base);
 
+        RS232Packet packet;
+
+
+        if(resetRequested) {
+            packet = new RS232Packet(reset);
+            if (RS232Configuration.INSTANCE.getAck())
+                packet.replace(2, (byte) 0x61);
+            packet.pack();
+            return packet.toBytes();
+        }
+
+        packet = new RS232Packet(base);
         if(RS232Configuration.INSTANCE.getAck())
             packet.replace(2, (byte)0x11);
+
 
         // Set enabled disable mask
         packet.replace(3, (byte)RS232Configuration.INSTANCE.getEnableMask());
@@ -73,14 +86,6 @@ final class RS232Socket {
             default:
                 packet.replace(4, (byte)0x00);
                 break;
-        }
-
-        if(resetRequested)
-        {
-            packet.or(2,(byte)0x40);
-            packet.replace(3, (byte)0x7F);
-            packet.replace(4, (byte)0x7F);
-            packet.replace(5, (byte)0x7F);
         }
 
         // Checksum it

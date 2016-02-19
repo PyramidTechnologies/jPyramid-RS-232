@@ -169,17 +169,13 @@ final class Courier extends Thread {
         byte[] command;
         byte[] resp;
 
+        boolean yy;
         while(!_stopThread.get()) {
             
             try {
     
                 // Generate command and send to slave
-                command = socket.generateCommand(creditAction);
-
-                if(_resetRequested.getAndSet(false))
-                {
-
-                }
+                command = socket.generateCommand(creditAction, _resetRequested.getAndSet(false));
 
                 port.write(command);
                 

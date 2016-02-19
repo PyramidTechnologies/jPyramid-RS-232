@@ -243,7 +243,7 @@ class RS232Packet {
             //Check for a valid credit                      
             if(event.contains(Events.Stacked)) {
                 event.add(Events.Credit);
-                billName = BillNames.fromByte(credit);    
+                billName = BillNames.fromByte(credit);
             }
 
 
