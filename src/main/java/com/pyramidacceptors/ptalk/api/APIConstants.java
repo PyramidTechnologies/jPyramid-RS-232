@@ -29,7 +29,7 @@ public abstract class APIConstants {
     /**
      * String response for client code
      */
-    private static final String API_REVISION = "1.2.3";
+    private static final String API_REVISION = "1.2.4";
     
     /**
      * Global, default timeout unless otherwise specified

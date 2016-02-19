@@ -4,6 +4,7 @@ package com.pyramidacceptors.ptalk.api;
  * Acceptor Model enumeration as reported by Pyramid products. This will not be accurate
  * for other bill acceptor manufacturers.
  * Created by cory on 2/17/2016.
+ * @since 1.2.3
  */
 public enum AcceptorModel {
 
