@@ -47,6 +47,10 @@ public class CreditEvent extends PTalkEvent {
         this.billName = billName;
     }
 
+    /**
+     * Returns the BillName that has been credited
+     * @return BillNames
+     */
     public BillNames getBillName() { return this.billName; }
 
 }

@@ -58,6 +58,7 @@ public enum RS232Configuration {
      * Sets the pollrate in . his is the rate at which
      * the master is querying the slave.
      * @param pollrate integer poll rate
+     * @return true if poll rate was succesfully set
      */
     public boolean setPollrate(int pollrate) {
         if(pollrate < 0 || pollrate > POLL_RATE_MAX)
@@ -119,7 +120,7 @@ public enum RS232Configuration {
     /**
      * Enables or disables the bill acceptor. If disabled. the master will still be able to poll
      * and receive status messages from the slave but acceptance is disabled.
-     * @param enabled
+     * @param enabled true to enable, false to disable
      */
     public void setEnabled(boolean enabled)
     {

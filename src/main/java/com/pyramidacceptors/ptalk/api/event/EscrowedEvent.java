@@ -47,6 +47,10 @@ public class EscrowedEvent extends PTalkEvent {
         this.billName = billName;
     }
 
+    /**
+     * Returns the BillName that is in escrow
+     * @return BillNames
+     */
     public BillNames getBillName() { return this.billName; }
 
 }

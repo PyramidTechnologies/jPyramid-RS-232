@@ -32,7 +32,7 @@ public class PTalkEvent extends EventObject {
      * Provides a set of events that generated this event
      *
      * @deprecated Use getId() instead
-     * @return EnumSet<Events>
+     * @return EnumSet
      */
     public EnumSet<Events> getEventId() { return this.compatiblitySet.clone(); }
 
