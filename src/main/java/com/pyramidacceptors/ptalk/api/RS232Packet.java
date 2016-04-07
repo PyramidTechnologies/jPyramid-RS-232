@@ -20,10 +20,9 @@ package com.pyramidacceptors.ptalk.api;
 import static com.pyramidacceptors.ptalk.api.CreditActions.*;
 
 import com.pyramidacceptors.ptalk.api.event.Events;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Objects;
+import com.pyramidacceptors.ptalk.api.event.PTalkEvent;
+
+import java.util.*;
 
 /**
  * Pyramid Technologies, Inc. 
@@ -53,6 +52,25 @@ class RS232Packet {
     public static final String BAD_MESSAGE_LENGTH = "Bad Message Length";
     public static final String BAD_CHECKSUM = "Bad checksum";
     public static final String NO_CONNECTION = "Acceptor Bus/Not Connected";
+
+    /**
+     * Returns the raw bytes that are sent for a reset request
+     * @return
+     */
+    public static byte[] resetBytes () {
+        return reset.clone();
+    }
+
+    /**
+     * Returns the raw bytes that are sent for a serial number request
+     * @return
+     */
+    public static byte[] serialNumberBytes () {
+        return serialNumber.clone();
+    }
+
+    private static final byte[] reset = new byte[]{0x02, 0x08, 0x60, 0x7f, 0x7f,  0x7f,  0x03};
+    private static final byte[] serialNumber = new byte[]{0x02, 0x08, 0x20, 0x7f, 0x7f,  0x7f,  0x03};
 
     /**
      * Creates a new, empty RS232 packet
@@ -86,13 +104,6 @@ class RS232Packet {
             checksum ^= data.get(i);
         }        
         return (checksum == data.get(10));     
-    }
-
-    /**
-     * @return a space delimited string of the bytes in this packet
-     */
-    public String getByteString() {
-        return byteListToString(data);
     }
 
     /**
@@ -328,21 +339,12 @@ class RS232Packet {
     }
 
     /**
-     * Create a new string from the given byte list.
-     * @param l byte list to convert
-     * @return string representation of byte list
+     * Returns the byte string form of this packet. e.g.
+     * 0x02 0x0B 0x20....
+     * @return
      */
-    private String byteListToString(List<Byte> l) {
-        if (l == null || l.isEmpty()) {
-            return "";
-        }
-        StringBuilder sb = new StringBuilder();
-        for (Byte b : l) {
-            sb.append(String.format(", 0x%02X", b));
-        }
-        String result = sb.toString();
-        // We don't want that leading comma
-        return result.substring(1, result.length()).trim();
+    public String getByteString() {
+        return Utilities.bytesToString(toBytes());
     }
 
     /**
@@ -354,7 +356,7 @@ class RS232Packet {
         if(message.equals("")) {
             sb.append(String.format("Command - Raw: %s", getByteString()));
         } else {
-            sb.append(String.format("Response - Raw: %s", getByteString())); 
+            sb.append(String.format("Response - Raw: %s", getByteString()));
             sb.append(String.format("Event: %s", this.event.toString()));
             sb.append(String.format("Message: %s", this.message));
         }

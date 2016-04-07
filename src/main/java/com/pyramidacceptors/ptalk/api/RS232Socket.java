@@ -17,9 +17,6 @@
 
 package com.pyramidacceptors.ptalk.api;
 
-import com.pyramidacceptors.ptalk.api.event.PTalkEvent;
-import org.apache.commons.collections4.queue.CircularFifoQueue;
-
 
 /**
  * A socket acts as the transport layer between a master and slave devce.<br>
@@ -37,7 +34,6 @@ final class RS232Socket {
     //                         start, len,  ack,  bills, escrow, resv'd, end, checksum
     private final byte[] base = new byte[]{0x02, 0x08, 0x10, 0x7F,  0x10,  0x00,  0x03};
 
-    private final byte[] reset = new byte[]{0x02, 0x08, 0x60, 0x7f, 0x7f,  0x7f,  0x03};
     /**
      * Generate a new RS-232 packet. By default, it is configured <br>
      * start with a standard polling message<br>
@@ -47,21 +43,11 @@ final class RS232Socket {
     /**
      * Generates the next master command
      * @param creditAction Credit action to take based upon last response
-     * @param resetRequested true to request that the slave reboot itself
      * @return byte[] command to send to slave
      */
-    public byte[] generateCommand(CreditActions creditAction, boolean resetRequested) {
+    public byte[] generateCommand(CreditActions creditAction) {
 
         RS232Packet packet;
-
-
-        if(resetRequested) {
-            packet = new RS232Packet(reset);
-            if (RS232Configuration.INSTANCE.getAck())
-                packet.replace(2, (byte) 0x61);
-            packet.pack();
-            return packet.toBytes();
-        }
 
         packet = new RS232Packet(base);
         if(RS232Configuration.INSTANCE.getAck())
@@ -94,13 +80,19 @@ final class RS232Socket {
     }
 
     /**
-     * Generates the next master command
-     * @param creditAction Credit action to take based upon last response
+     * Generates a non-standard command that is outside of the polling
+     * loop.
+     * @param content byte[] to insert into the master message. Must 5 or
+     *                fewer bytes in length
      * @return byte[] command to send to slave
      */
-    public byte[] generateCommand(CreditActions creditAction) {
-        return generateCommand(creditAction, false);
-    } 
+    public byte[] generateCommandCustom(byte[] content) {
+        RS232Packet packet = new RS232Packet(content);
+        if(RS232Configuration.INSTANCE.getAck())
+            packet.replace(2, (byte)0x11);
+        packet.pack();
+        return packet.toBytes();
+    }
 
     public RS232Packet parseResponse(byte[] bytes) {
         return new RS232Packet().parseAsNew(bytes);
