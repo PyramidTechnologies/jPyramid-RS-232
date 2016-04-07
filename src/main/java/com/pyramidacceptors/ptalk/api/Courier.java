@@ -39,11 +39,12 @@ final class Courier extends Thread {
     private final Logger logger = LoggerFactory.getLogger(Courier.class);
 
     private PyramidPort port;
+    private AtomicBoolean _isPaused = new AtomicBoolean(false);
+    private AtomicBoolean _isStopped = new AtomicBoolean(true);
     private AtomicBoolean _stopThread = new AtomicBoolean(false);
     private AtomicBoolean _resetRequested = new AtomicBoolean(false);
     private AtomicBoolean _serialNumberRequested = new AtomicBoolean(false);
-    private AtomicBoolean _isPaused = new AtomicBoolean(false);
-    private AtomicBoolean _isStopped = new AtomicBoolean(true);
+
 
     private boolean _comOkay = true;
     
@@ -185,14 +186,13 @@ final class Courier extends Thread {
     public void run() {
         
         // Loop until we receive client calls the stop thread method
-        byte[] command;
-        byte[] resp;
 
         _isStopped.set(false);
         while(!_stopThread.get()) {
             
             try {
 
+                // Just burn time in POLL_RATE increments while paused
                 while(_isPaused.get()) {
 
                     sleep(RS232Configuration.INSTANCE.getPollrate());

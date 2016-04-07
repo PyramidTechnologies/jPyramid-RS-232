@@ -88,8 +88,8 @@ final class RS232Socket {
      */
     public byte[] generateCommandCustom(byte[] content) {
         RS232Packet packet = new RS232Packet(content);
-        if(RS232Configuration.INSTANCE.getAck())
-            packet.replace(2, (byte)0x11);
+        //if(RS232Configuration.INSTANCE.getAck())
+        //    packet.or(2, (byte)0x01);
         packet.pack();
         return packet.toBytes();
     }

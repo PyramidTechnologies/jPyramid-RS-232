@@ -36,4 +36,22 @@ public class Utilities {
 
 
     }
+
+
+    static String leftPadding(String in, int count, char pad) {
+        if(in.length() >= count)
+            return in;
+
+        StringBuilder sb = new StringBuilder();
+        for(int i=0; i<count-in.length(); i++) {
+            sb.append(pad);
+        }
+
+        for(char c : in.toCharArray()) {
+            sb.append(c);
+        }
+
+        return sb.toString();
+    }
+
 }

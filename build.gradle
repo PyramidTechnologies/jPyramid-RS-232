@@ -6,7 +6,12 @@ group='com.pyramidacceptors'
 archivesBaseName = "jPyramid-RS-232"
 
 sourceCompatibility = 1.7
-version = '1.2.4'
+version = new Version(major: 1, minor: 2, revision: 5).toString()
+
+
+task version() {
+    println version
+}
 
 task javadocJar(type: Jar) {
     classifier = 'javadoc'
@@ -39,6 +44,13 @@ boolean hasCredentials = hasProperty('ossrhUsername') && hasProperty('ossrhPassw
 signing {
     required { isReleaseVersion && gradle.taskGraph.hasTask("uploadArchives") }
     sign configurations.archives
+}
+
+class Version {
+    int major, minor, revision
+    String toString() {
+        "$major.$minor.$revision"
+    }
 }
 
 test {

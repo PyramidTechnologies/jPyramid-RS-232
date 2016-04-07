@@ -153,6 +153,16 @@ public class PyramidAcceptor implements ICommDevice, RS232EventListener {
     }
 
     /**
+     * Request the slave to report its serial number in the next message loop.
+     * Requires USA firmware 1.12 or newer. For foreign models, please contact
+     * PTI for more information.
+     * @since 1.2.5
+     */
+    public void requestSerialNumber(){
+        courier.requestSerialNumer();
+    }
+
+    /**
      * Returns the 9-digit serial number of the target acceptor. This requires USA firmware 1.12
      * or newer. For other countries, please contact PTI.
      *
@@ -211,10 +221,6 @@ public class PyramidAcceptor implements ICommDevice, RS232EventListener {
                 logger.info("Connected to device on port {}",
                         port.getPortName());
 
-                // Request serial number from the start. This will
-                // set the serialNumber string in the courier.
-                courier.requestSerialNumer();
-            
             } else {
 
                 logger.error("Failed to connect device on port {}",
