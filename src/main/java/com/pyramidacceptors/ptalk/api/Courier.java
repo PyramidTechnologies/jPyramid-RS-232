@@ -17,7 +17,6 @@
 
 package com.pyramidacceptors.ptalk.api;
 
-import java.util.Iterator;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -44,6 +43,7 @@ final class Courier extends Thread {
     private AtomicBoolean _resetRequested = new AtomicBoolean(false);
     private AtomicBoolean _serialNumberRequested = new AtomicBoolean(false);
     private AtomicBoolean _isPaused = new AtomicBoolean(false);
+    private AtomicBoolean _isStopped = new AtomicBoolean(true);
 
     private boolean _comOkay = true;
     
@@ -172,7 +172,9 @@ final class Courier extends Thread {
      */
     protected void stopThread() {
         this._stopThread.set(true);
-        port = null;
+        logger.debug("Stopping courier thread...");
+        while(this._isStopped.get()) {sleep(5); }
+        logger.debug("Courier thread stopped");
     }
 
     /**
@@ -183,34 +185,32 @@ final class Courier extends Thread {
     public void run() {
         
         // Loop until we receive client calls the stop thread method
-        RS232Packet respPacket;
         byte[] command;
         byte[] resp;
 
-        boolean parseAsSN = false;
-
+        _isStopped.set(false);
         while(!_stopThread.get()) {
             
             try {
 
                 while(_isPaused.get()) {
-                    Thread.sleep(RS232Configuration.INSTANCE.getPollrate());
+
+                    sleep(RS232Configuration.INSTANCE.getPollrate());
                 }
 
-                // If serial number is being requested, run that command instead
-                if(_serialNumberRequested.getAndSet(false)) {
+                if(_serialNumberRequested.get()) {
 
+                    logger.debug("Serial number command being generated");
                     command = socket.generateCommandCustom(RS232Packet.serialNumberBytes());
-                    parseAsSN = true;
 
-                } else if(_resetRequested.getAndSet(false)) {
+                } else if(_resetRequested.get()) {
 
-
-                   command = socket.generateCommandCustom(RS232Packet.resetBytes());
+                    logger.debug("Reset request command being generated");
+                    command = socket.generateCommandCustom(RS232Packet.resetBytes());
 
                 } else {
 
-                    // Generate command and send to slave
+                    // Generate normal polling command
                     command = socket.generateCommand(creditAction);
                 }
 
@@ -223,56 +223,34 @@ final class Courier extends Thread {
                 resp = port.readBytes(socket.getMaxPacketRespSize());
 
                 // Notify that we've received a response
-                fireChangeEvent(SerialDataEvent.newRxEvent(this, Utilities.bytesToString(command)));
+                fireChangeEvent(SerialDataEvent.newRxEvent(this, Utilities.bytesToString(resp)));
 
                 // If this is a serial number, parse it differently
-                if(parseAsSN) {
-                    parseAsSN = false;
+                if(_serialNumberRequested.get()) {
+
+                    _serialNumberRequested.set(false);
 
                     byte[] sn = new byte[5];
                     System.arraycopy(resp, 3, sn, 0, sn.length);
 
                     rawSerialNumber = new String(sn);
+                    logger.debug("Serial number response parsed");
+
+                } else if (_resetRequested.get()) {
+
+                    _resetRequested.set(false);
+
+                    // We should delay after reset. 500 ms should do it
+                    port.closePort();
+
+                    sleep(500);
+                    port.openPort();
+                    logger.debug("Acceptor reset performed");
 
                 } else {
 
-                    respPacket = socket.parseResponse(resp);
+                    handleEvents(resp);
 
-                    creditAction = respPacket.getCreditAction();
-
-                    rawFirmwareRevision = respPacket.getFirmwareRevision();
-
-                    rawAcceptorModel = respPacket.getAcceptorModel();
-
-
-                    PTalkEvent e;
-                    for(Events type : respPacket.getInterpretedEvents()) {
-
-                        // Is this an event that requires extra data?
-                        switch (type) {
-
-                            case Credit:
-                                e = new CreditEvent(
-                                        this,
-                                        Utilities.bytesToString(resp),
-                                        respPacket.getBillName());
-                                break;
-
-                            case Escrowed:
-                                e = new EscrowedEvent(
-                                        this,
-                                        Utilities.bytesToString(resp),
-                                        respPacket.getBillName());
-                                break;
-
-                            default:
-                                e = new PTalkEvent(this, type, respPacket.getByteString());
-
-                        }
-
-                        // Notify any listeners that we have data
-                        fireChangeEvent(e);
-                    }
                 }
 
                 // Wait for pollRate milliseconds before looping through again
@@ -282,14 +260,51 @@ final class Courier extends Thread {
                 logger.error(ex.getMessage());
                 _comOkay = false;
             } catch (SerialPortTimeoutException ex1) {
-                logger.error("SendBytes timed out. ({0} ms)", APIConstants.COMM_TIMEOUT);
+                logger.error("SendBytes timed out. ({} ms)", APIConstants.COMM_TIMEOUT);
                 _comOkay = false;
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
         }
-        
-    }   
+
+        _isStopped.set(true);
+    }
+
+    private void handleEvents(byte[] resp) {
+
+        RS232Packet respPacket = socket.parseResponse(resp);
+
+        creditAction = respPacket.getCreditAction();
+        rawFirmwareRevision = respPacket.getFirmwareRevision();
+        rawAcceptorModel = respPacket.getAcceptorModel();
+
+        PTalkEvent e;
+        for(Events type : respPacket.getInterpretedEvents()) {
+
+            // Is this an event that requires extra data?
+            switch (type) {
+
+                case Credit:
+                    e = new CreditEvent(
+                            this,
+                            Utilities.bytesToString(resp),
+                            respPacket.getBillName());
+                    break;
+
+                case Escrowed:
+                    e = new EscrowedEvent(
+                            this,
+                            Utilities.bytesToString(resp),
+                            respPacket.getBillName());
+                    break;
+
+                default:
+                    e = new PTalkEvent(this, type, respPacket.getByteString());
+
+            }
+
+            // Notify any listeners that we have data
+            fireChangeEvent(e);
+        }
+    }
     
     /**
      * Sleep for d milliseconds<br>
