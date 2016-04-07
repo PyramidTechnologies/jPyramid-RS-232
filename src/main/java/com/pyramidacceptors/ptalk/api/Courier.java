@@ -97,7 +97,7 @@ final class Courier extends Thread {
      * Returns the  acceptor model of the connected acceptor
      * @return AcceptorModel
      */
-    public AcceptorModel getAcceptorModel() {
+    public String getAcceptorModel() {
         return AcceptorModel.fromByte(rawAcceptorModel);
     }
 
@@ -200,62 +200,21 @@ final class Courier extends Thread {
 
                 if(_serialNumberRequested.get()) {
 
-                    logger.debug("Serial number command being generated");
-                    command = socket.generateCommandCustom(RS232Packet.serialNumberBytes());
+                    handleSerialNumberRequest();
 
                 } else if(_resetRequested.get()) {
 
-                    logger.debug("Reset request command being generated");
-                    command = socket.generateCommandCustom(RS232Packet.resetBytes());
+                    handleResetRequest();
 
                 } else {
 
-                    // Generate normal polling command
-                    command = socket.generateCommand(creditAction);
+                    handleNormalLoop();
                 }
 
-                // Notify client that we're sending a packet
-                fireChangeEvent(SerialDataEvent.newTxEvent(this, Utilities.bytesToString(command)));
-
-                port.write(command);
-                
-                // Collect the response
-                resp = port.readBytes(socket.getMaxPacketRespSize());
-
-                // Notify that we've received a response
-                fireChangeEvent(SerialDataEvent.newRxEvent(this, Utilities.bytesToString(resp)));
-
-                // If this is a serial number, parse it differently
-                if(_serialNumberRequested.get()) {
-
-                    _serialNumberRequested.set(false);
-
-                    byte[] sn = new byte[5];
-                    System.arraycopy(resp, 3, sn, 0, sn.length);
-
-                    rawSerialNumber = new String(sn);
-                    logger.debug("Serial number response parsed");
-
-                } else if (_resetRequested.get()) {
-
-                    _resetRequested.set(false);
-
-                    // We should delay after reset. 500 ms should do it
-                    port.closePort();
-
-                    sleep(500);
-                    port.openPort();
-                    logger.debug("Acceptor reset performed");
-
-                } else {
-
-                    handleEvents(resp);
-
-                }
 
                 // Wait for pollRate milliseconds before looping through again
                 sleep(RS232Configuration.INSTANCE.getPollrate());
-                       
+
             } catch (SerialPortException ex) {
                 logger.error(ex.getMessage());
                 _comOkay = false;
@@ -266,6 +225,85 @@ final class Courier extends Thread {
         }
 
         _isStopped.set(true);
+    }
+
+    private void handleNormalLoop() throws SerialPortException, SerialPortTimeoutException {
+
+        byte[] resp = writeWrapper(socket.generateCommand(creditAction));
+
+        handleEvents(resp);
+    }
+
+    private void handleResetRequest() throws SerialPortException, SerialPortTimeoutException  {
+
+
+        logger.debug("Reset request command being generated");
+
+        // Clear flag before we touch the serial port in case the slave does not
+        // support the request
+        _resetRequested.set(false);
+
+        // No response is expected
+        writeWrapper(socket.generateCommandCustom(RS232Packet.resetBytes()));
+
+        // We should delay after reset. 500 ms should do it
+        port.closePort();
+
+        sleep(500);
+        port.openPort();
+        logger.debug("Acceptor reset performed");
+    }
+
+    private void handleSerialNumberRequest() throws SerialPortException, SerialPortTimeoutException  {
+
+        logger.debug("Serial number command being generated");
+
+        // Clear flag before we touch the serial port in case the slave does not
+        // support the request
+        _serialNumberRequested.set(false);
+
+        byte[] command = socket.generateCommandCustom(RS232Packet.serialNumberBytes());
+
+        byte[] resp = writeWrapper(command);
+
+
+        byte[] sn = new byte[5];
+        System.arraycopy(resp, 3, sn, 0, sn.length);
+
+        StringBuilder sb = new StringBuilder();
+        for(byte b : sn) {
+            sb.append(Utilities.leftPadding(Integer.toHexString(b), 2, '0'));
+        }
+        rawSerialNumber = sb.toString();
+        logger.debug("Serial number response parsed");
+    }
+
+
+    /**
+     * Writes specified data to port and performs minor housekeeping tasks
+     * @param command byte[] to send to slave
+     * @return byte[] response
+     * @throws SerialPortException if the is a hardware fault
+     * @throws SerialPortTimeoutException if the slave does not respond in a timely manner
+     */
+    private byte[] writeWrapper(byte[] command) throws SerialPortException, SerialPortTimeoutException {
+
+        // Notify client that we're sending a packet
+        fireChangeEvent(SerialDataEvent.newTxEvent(this, Utilities.bytesToString(command)));
+
+        port.write(command);
+
+        // Collect the response
+        byte[] resp = port.readBytes(socket.getMaxPacketRespSize());
+
+        // Notify that we've received a response
+        fireChangeEvent(SerialDataEvent.newRxEvent(this, Utilities.bytesToString(resp)));
+
+        if(!RS232Packet.isValid(resp))
+            port.flush();
+
+        return resp;
+
     }
 
     private void handleEvents(byte[] resp) {

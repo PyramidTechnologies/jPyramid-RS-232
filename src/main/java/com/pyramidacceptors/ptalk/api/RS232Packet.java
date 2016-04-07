@@ -99,11 +99,24 @@ class RS232Packet {
         if(data.size() != 11)
             return false;
 
+        if(data.get(0) != 0x02)
+            return false;
+
         byte checksum = (byte)(data.get(1) ^ data.get(2));
         for(int i=3;i<9;i++) {
             checksum ^= data.get(i);
         }        
         return (checksum == data.get(10));     
+    }
+
+    /**
+     * Assert that this packet is of proper structure and matches<br>
+     * checksum<br>.
+     * <br>
+     * @return true is valid, otherwise false
+     */
+    public static boolean isValid(byte[] arr) {
+        return new RS232Packet(arr).isValid();
     }
 
     /**

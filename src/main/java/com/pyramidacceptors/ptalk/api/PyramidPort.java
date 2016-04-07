@@ -43,7 +43,11 @@ final public class PyramidPort {
     private final int stopBits;
     private final boolean setRTS;
     private final boolean setDTR;
-  
+
+    public static final int	PURGE_RXCLEAR = SerialPort.PURGE_RXCLEAR;
+    public static final int	PURGE_TXCLEAR = SerialPort.PURGE_RXCLEAR;
+
+
     /***
      * PortBuilder is a helper class for configurating a <tt>PyramidPort</tt>.<br>
      * Be sure to call .build() once you have called all configuration <br>
@@ -251,6 +255,18 @@ final public class PyramidPort {
           throw new PyramidDeviceException(ex.getPortName(), ex.getMethodName(), ex.getExceptionType());
       } 
   }
+
+    /**
+     * Flush all data bytes in the input and output buffers
+     * @throws com.pyramidacceptors.ptalk.api.PyramidDeviceException
+     */
+    void flush() throws PyramidDeviceException {
+        try {
+            _port.purgePort(PURGE_RXCLEAR | PURGE_TXCLEAR);
+        } catch (SerialPortException ex) {
+            throw new PyramidDeviceException(ex.getPortName(), ex.getMethodName(), ex.getExceptionType());
+        }
+    }
   
   /**
    * Register the SerialPortEventListener to event on this port.<br>
