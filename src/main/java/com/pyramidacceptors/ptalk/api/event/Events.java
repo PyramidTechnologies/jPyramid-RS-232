@@ -155,7 +155,11 @@ public enum Events {
     /**
      * A valid credit message has been received.
      */
-    Credit(16);
+    Credit(16),
+    /**
+     * Raised whenever serial data is sent or received
+      */
+    SerialData(17);
     
     private final int event;
     

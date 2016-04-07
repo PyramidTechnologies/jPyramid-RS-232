@@ -18,7 +18,6 @@
 package com.pyramidacceptors.ptalk.api.event;
 
 import com.pyramidacceptors.ptalk.api.BillNames;
-import java.util.EnumSet;
 
 /**
  * Pyramid Technologies, Inc. 
@@ -31,27 +30,23 @@ import java.util.EnumSet;
  * {@link Events#Escrowed}
  * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
  */
-public class EscrowedEvent extends PTalkEvent {    
-    private static final long serialVersionUID = 1L;
+public class EscrowedEvent extends PTalkEvent {
+
+    private final BillNames billName;
 
     /**
-     * Raised when slave enters the Escrowed state
-     * @param source origin the event
-     * @param billName the name of the bill credited or invalid if non-credit event
-     * @param friendylyString parsed command code or additional information
-     * @param e EnumSet containing all events and the state of this PTalkEvent
+     * Creates a new event
+     *
+     * @param source     origin the event
+     * @param rawMessage Stringified packet that generated this event
      */
-    public EscrowedEvent(Object source, BillNames billName, 
-            String friendylyString, EnumSet<Events> e) {
-        super(source, billName, friendylyString, e);
+    public EscrowedEvent(Object source, String rawMessage, BillNames billName)
+    {
+        super(source, Events.Escrowed, rawMessage);
+
+        this.billName = billName;
     }
 
-    /**
-     * Construct a this derived event from its base event
-     * @param event PTalk parent event
-     */
-    public EscrowedEvent(PTalkEvent event) {
-        super(event.getSource(), event.getBillName(), 
-                event.getFriendlyString(), event.getEventId());
-    }
+    public BillNames getBillName() { return this.billName; }
+
 }
