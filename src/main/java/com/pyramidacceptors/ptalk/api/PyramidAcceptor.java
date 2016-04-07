@@ -137,7 +137,7 @@ public class PyramidAcceptor implements ICommDevice, RS232EventListener {
      * every message so it is normal to check back periodically until you have a valid acceptor model.
      * @return string
      */
-    public AcceptorModel getAcceptorModel() {
+    public String getAcceptorModel() {
         return courier.getAcceptorModel();
     }
 
