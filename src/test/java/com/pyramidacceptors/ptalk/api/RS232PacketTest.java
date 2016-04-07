@@ -64,7 +64,7 @@ public class RS232PacketTest {
         // Good input
         bad = new byte[] { 0x10, 0x3A, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x08 };
         packet = new RS232Packet(bad);
-        expected = "0x10, 0x3A, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x08";
+        expected = "10 3A 02 03 04 05 06 07 08 09 08 ";
         assertEquals(expected, packet.getByteString());
 
         // generate empty string

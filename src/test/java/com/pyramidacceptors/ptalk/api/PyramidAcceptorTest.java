@@ -9,6 +9,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Properties;
@@ -55,12 +56,14 @@ public class PyramidAcceptorTest {
         PyramidAcceptor acceptor = PyramidAcceptor.asTest();
         acceptor.addChangeListener(monitor);
 
-        // Add all known events to the set and pass that as our mocked event
-        EnumSet<Events> eventSet = EnumSet.allOf(Events.class);
-        PTalkEvent event = new PTalkEvent(this,BillNames.Bill1, "", eventSet);
-
         // Generate some events
-        acceptor.changeEventReceived(event);
+        List<PTalkEvent> eventTestSet = new ArrayList<>();
+        PTalkEvent p;
+        for (Events e: EnumSet.allOf(Events.class)) {
+            p = new PTalkEvent(this, e, "");
+            eventTestSet.add(p);
+            acceptor.changeEventReceived(p);
+        }
 
         // Setup our event capture test
         ArgumentCaptor<PTalkEvent> captor = ArgumentCaptor.forClass(PTalkEvent.class);
@@ -69,29 +72,9 @@ public class PyramidAcceptorTest {
         // Note, this is a virtual test and actually just checks the call stack so
         // don't expect anything to actually execute within "eventReceived".
         // There should be exactly one events for each of the Events in eventSet.
-        verify(monitor, times(eventSet.size())).changeEventReceived(captor.capture());
+        verify(monitor, times(eventTestSet.size())).changeEventReceived(captor.capture());
 
-        List<PTalkEvent> capturedEvents = captor.getAllValues();
-
-        PTalkEvent pureEvent;
-        new AcceptingEvent(this, event.getBillName(), event.getFriendlyString(), event.getEventId());
-        new BillJammedEvent(this, event.getBillName(), event.getFriendlyString(), event.getEventId());
-        new BillRejectedEvent(this, event.getBillName(), event.getFriendlyString(), event.getEventId());
-        new CasseteMissingEvent(this, event.getBillName(), event.getFriendlyString(), event.getEventId());
-        new CheatedEvent(this, event.getBillName(), event.getFriendlyString(), event.getEventId());
-        new CreditEvent(this, event.getBillName(), event.getFriendlyString(), event.getEventId());
-        new EscrowedEvent(this, event.getBillName(), event.getFriendlyString(), event.getEventId());
-        new FailureEvent(this, event.getBillName(), event.getFriendlyString(), event.getEventId());
-        new IdlingEvent(this, event.getBillName(), event.getFriendlyString(), event.getEventId());
-        new InvalidMessageEvent(this, event.getBillName(), event.getFriendlyString(), event.getEventId());
-        new PowerUpEvent(this, event.getBillName(), event.getFriendlyString(), event.getEventId());
-        new ReturnedEvent(this, event.getBillName(), event.getFriendlyString(), event.getEventId());
-        new ReturningEvent(this, event.getBillName(), event.getFriendlyString(), event.getEventId());
-        new StackingEvent(this, event.getBillName(), event.getFriendlyString(), event.getEventId());
-        new StackedEvent(this, event.getBillName(), event.getFriendlyString(), event.getEventId());
-        new StackerFullEvent(this, event.getBillName(), event.getFriendlyString(), event.getEventId());
-
-
+        captor.getAllValues();
 
 
         acceptor.removeChangeListener(monitor);

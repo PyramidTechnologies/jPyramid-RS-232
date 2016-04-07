@@ -168,7 +168,7 @@ public class CourierTest_Optional {
         return result;
     }
 
-    class EventMonitor implements PTalkEventListener {
+    class EventMonitor implements RS232EventListener {
         @Override
         public void changeEventReceived(PTalkEvent evt) {
 
