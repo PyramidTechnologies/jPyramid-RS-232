@@ -18,7 +18,6 @@
 package com.pyramidacceptors.ptalk.api;
 
 import com.pyramidacceptors.ptalk.api.event.*;
-import java.util.EnumSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.slf4j.Logger;
@@ -48,7 +47,8 @@ public class PyramidAcceptor implements ICommDevice, RS232EventListener {
      * @param port string port name
      */
     private PyramidAcceptor(PyramidPort port) {
-        this.port = port; 
+        this.port = port;
+        logger.info("Port created");
     }
 
     /**
@@ -142,7 +142,10 @@ public class PyramidAcceptor implements ICommDevice, RS232EventListener {
     }
 
     /**
-     * Request the slave to perform a power cycle
+     * Request the slave to perform a power cycle. This will be sent in the
+     * next message loop so the delay may be up to the poll rate set in your RS-232
+     * configuration. The acceptor will take at least 500ms to become available once
+     * the reset has been performed.
      * @since 1.2.4
      */
     public void requestReset(){
@@ -255,7 +258,12 @@ public class PyramidAcceptor implements ICommDevice, RS232EventListener {
     
     @Override
     public boolean setPollRate(int rate) {
-        return RS232Configuration.INSTANCE.setPollrate(rate);
+        boolean result = RS232Configuration.INSTANCE.setPollrate(rate);
+        if (result)
+            logger.debug("Poll rate set to: {}", rate);
+        else
+            logger.debug("Failed to set poll rate to: {}", rate);
+        return result;
     }
 
     @Override
@@ -270,10 +278,12 @@ public class PyramidAcceptor implements ICommDevice, RS232EventListener {
 
     public void pause() {
         courier.pause(true);
+        logger.debug("Acceptor un paused");
     }
 
     public void unpause() {
         courier.pause(false);
+        logger.debug("Acceptor paused");
     }
 
     @Override
@@ -282,11 +292,14 @@ public class PyramidAcceptor implements ICommDevice, RS232EventListener {
         Events event = evt.getId();
         int eventMask = RS232Configuration.INSTANCE.getEventMask();
 
+        // Don't clog the log with idle banter
+        if(event != Events.Idling && event != Events.SerialData)
+            logger.debug("Courier event: {}", event.name());
+
         // Filters out events that the client is not subscribed to
         if((event.getIntId() & eventMask) != event.getIntId()) {
             return;
         }
-
         // Otherwise, raise a normal event
         fireChangeEvent(evt);
     }

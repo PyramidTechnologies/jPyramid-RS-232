@@ -117,6 +117,5 @@ dependencies {
     testCompile 'com.google.guava:guava:18.0'
     testCompile 'org.mockito:mockito-all:2.0.2-beta'
     compile 'org.scream3r:jssc:2.8.0'
-    compile 'org.apache.commons:commons-collections4:4.0'
-    compile 'org.slf4j:slf4j-api:1.7.12'
+    compile 'org.slf4j:slf4j-api:1.7.21'
 }
