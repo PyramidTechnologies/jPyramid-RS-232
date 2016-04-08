@@ -48,7 +48,7 @@ public class SerialDataEvent extends PTalkEvent {
      * Generates a new slave, or Rx, type serial data event
      * @param source Object that raised this event
      * @param message Stringified packet
-     * @return SerialDataEvent
+     * @return SerialDataEvent event containing packet information
      */
     public static SerialDataEvent newRxEvent(Object source, String message) {
         return new SerialDataEvent(source, MessageType.Slave, message);

@@ -49,7 +49,7 @@ public class EscrowedEvent extends PTalkEvent {
 
     /**
      * Returns the BillName that is in escrow
-     * @return BillNames
+     * @return BillNames name of bill that is in escrow
      */
     public BillNames getBillName() { return this.billName; }
 

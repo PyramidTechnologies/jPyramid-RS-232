@@ -91,7 +91,8 @@ public enum RS232Configuration {
     /**
      * Sets the polling retry limit for the polling loop. This limit
      * determines how many communication failures (e.g. non-responsive, IOExceptions, etc.)
-     * before connection falilure events begin being emitted. The limit must be >= 0.
+     * before connection falilure events begin being emitted. The limit must be greater than
+     * or equal to 0.
      *
      * Default: 5
      *
