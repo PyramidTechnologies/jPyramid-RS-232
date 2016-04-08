@@ -4,6 +4,8 @@ package com.pyramidacceptors.ptalk.api.event;
  * Created by cory on 4/8/2016.
  *
  * Event is raised when the serial connection is suspected of being lost.
+ *
+ * @since 1.2.5
  */
 public class ConnectionFailureEvent extends PTalkEvent {
 

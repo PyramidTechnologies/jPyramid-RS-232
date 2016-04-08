@@ -7,6 +7,8 @@ import com.pyramidacceptors.ptalk.api.MessageType;
  *
  * This event encapsulates a packet being sent by this host (master)
  * or send my the target acceptor (slave)
+ *
+ * @since 1.2.5
  */
 public class SerialDataEvent extends PTalkEvent {
     public final MessageType messageType;

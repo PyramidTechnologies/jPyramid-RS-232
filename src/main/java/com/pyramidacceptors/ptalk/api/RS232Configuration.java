@@ -83,6 +83,7 @@ public enum RS232Configuration {
      * limit is reached, the polling thread will raise a connection failure event
      * until either the polling loop is stopped or the target comes back online.
      * @return int
+     * @since 1.2.5
      */
     public int getPollRetryLimit() {
         return _poll_retry_limit;
@@ -98,6 +99,7 @@ public enum RS232Configuration {
      *
      * @param limit int
      * @return boolean true of limit was applied successfully. False is limit is invalid.
+     * @since 1.2.5
      */
     public boolean setPollRetryLimit(int limit) {
         if(limit < 0)
