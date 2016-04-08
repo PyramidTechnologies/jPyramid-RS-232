@@ -1,18 +1,19 @@
 package com.pyramidacceptors.ptalk.api;
 
 /**
-* Enumerated bill directions specifically for a bill validator
-* type.
- *{@code ICommDevice}<br><br>
+ * Enumerated bill directions specifically for a bill validator
+ * type.
+ * {@code ICommDevice}<br><br>
  * At this time, RS-232 does not support configuring these
  * options. Use Acceptor Tools or Blustream to configure this option.
  * <a href="https://pyramidacceptors.com/app">Download</a>
+ * <p/>
+ * <br>
  *
-* <br>
-* @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
-* @since 1.0.0.0
-*/
-public enum BillDirections {
+ * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
+ * @since 1.0.0.0
+ */
+enum BillDirections {
 
     /**
      * No value has been assigned
@@ -39,14 +40,13 @@ public enum BillDirections {
     /**
      * Convert a byte into an enumerated bill direction <br>
      * <br>
+     *
      * @param b byte to convert
      * @return BillDirection enumeration. Invalid values default to
      * {@code Unset}
      */
-    public static BillDirections fromByte(byte b)
-    {
-        switch(b)
-        {
+    public static BillDirections fromByte(byte b) {
+        switch (b) {
             case 0:
                 return LeftUp;
             case 1:
