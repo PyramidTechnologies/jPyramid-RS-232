@@ -270,10 +270,16 @@ final class Courier extends Thread {
         byte[] sn = new byte[5];
         System.arraycopy(resp, 3, sn, 0, sn.length);
 
+        // Since the serial number is 9 digits in length, we encode as 4 BCD values
+        // plus a single byte on the end. Remove the second to last zero to fix this.
         StringBuilder sb = new StringBuilder();
-        for(byte b : sn) {
-            sb.append(Utilities.leftPadding(Integer.toHexString(b), 2, '0'));
+        for(int i=0; i< 5; i++) {
+            if(i == 4)
+                sb.append(Integer.toHexString(sn[i]));
+            else
+                sb.append(Utilities.leftPadding(Integer.toHexString(sn[i]), 2, '0'));
         }
+
         rawSerialNumber = sb.toString();
         logger.debug("Serial number response parsed");
     }
