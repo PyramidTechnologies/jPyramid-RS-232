@@ -42,6 +42,7 @@ public enum RS232Configuration {
      * All flags except serial data event are enabled by default
      */
     public static final int DEFAULT_EVENT_MASK = 0xFFFE_FFFF;
+    public static final int ALL_EVENTS_MASK = 0xFFFF_FFFF;
 
     private boolean _ack = false;
     private final AtomicBoolean _escrowmode 

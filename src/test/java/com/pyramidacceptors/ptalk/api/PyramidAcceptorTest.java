@@ -59,6 +59,8 @@ public class PyramidAcceptorTest {
         // Generate some events
         List<PTalkEvent> eventTestSet = new ArrayList<>();
         PTalkEvent p;
+
+        RS232Configuration.INSTANCE.setEventMask(RS232Configuration.ALL_EVENTS_MASK);
         for (Events e: EnumSet.allOf(Events.class)) {
             p = new PTalkEvent(this, e, "");
             eventTestSet.add(p);

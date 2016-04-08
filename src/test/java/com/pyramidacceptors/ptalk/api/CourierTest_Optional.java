@@ -1,7 +1,6 @@
 package com.pyramidacceptors.ptalk.api;
 
 import com.pyramidacceptors.ptalk.api.event.PTalkEvent;
-import com.pyramidacceptors.ptalk.api.event.PTalkEventListener;
 import org.junit.Test;
 
 import org.junit.Before;
@@ -15,7 +14,6 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.Mockito.verify;
