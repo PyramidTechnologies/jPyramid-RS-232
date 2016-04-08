@@ -42,21 +42,22 @@ public class Utilities {
      * Applies a left padding to the provided string. If the string is already count in length,
      * no change will be made. Otherwise, the pad character will be prepended until count length
      * is satisfied.
-     * @param in String to left pad
+     *
+     * @param in    String to left pad
      * @param count Minimum string length to achieve
-     * @param pad Character to pad with
+     * @param pad   Character to pad with
      * @return String
      */
     static String leftPadding(String in, int count, char pad) {
-        if(in.length() >= count)
+        if (in.length() >= count)
             return in;
 
         StringBuilder sb = new StringBuilder();
-        for(int i=0; i<count-in.length(); i++) {
+        for (int i = 0; i < count - in.length(); i++) {
             sb.append(pad);
         }
 
-        for(char c : in.toCharArray()) {
+        for (char c : in.toCharArray()) {
             sb.append(c);
         }
 

@@ -17,46 +17,44 @@
 
 package com.pyramidacceptors.ptalk.api;
 
-import com.pyramidacceptors.ptalk.api.event.Events;
-
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * RS-232 states, events and errors as defined in the 
- * <a href="http://www.pyramidacceptors.com/files/RS_232.pdf">RS-232 Spec.</a><br> 
- * <br> 
+ * RS-232 states, events and errors as defined in the
+ * <a href="http://www.pyramidacceptors.com/files/RS_232.pdf">RS-232 Spec.</a><br>
+ * <br>
+ *
  * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
  * @since 1.0.0.0
  */
 public enum RS232Configuration {
 
     /**
-     *Instance is singleton of RS232Configuration. This contains<br>
+     * Instance is singleton of RS232Configuration. This contains<br>
      * all state, event, and error information pertaining to the attached slave.
      */
     INSTANCE;
-
-    private static final int POLL_RATE_MAX = 5000;     // Set max to 5 seconds
 
     /**
      * All flags except serial data event are enabled by default
      */
     public static final int DEFAULT_EVENT_MASK = 0xFFFE_FFFF;
     public static final int ALL_EVENTS_MASK = 0xFFFF_FFFF;
-
-    private boolean _ack = false;
-    private final AtomicBoolean _escrowmode 
+    private static final int POLL_RATE_MAX = 5000;     // Set max to 5 seconds
+    private final AtomicBoolean _escrowmode
             = new AtomicBoolean(false);         // Set to false to disable escrow
+    private boolean _ack = false;
     private int _edMask = 0x7F;                 // All bills enabled by default
     private int _edMask_bak = 0x7F;             // Backup mask in case user uses setEnabled(false)
     private int _evMask = DEFAULT_EVENT_MASK;   // All events enabled by default
     private int _pollRate = 100;                // Default poll rate is milliseconds
     private int _poll_retry_limit = 5;          // Limit to number of failures polling loop will allow before
-                                                // raising connection failure events
+    // raising connection failure events
 
     /**
      * Returns the current poll rate is milliseconds. This is the rate at which
      * the master will query the slave.
+     *
      * @return int
      */
     public int getPollrate() {
@@ -66,11 +64,12 @@ public enum RS232Configuration {
     /**
      * Sets the pollrate in . his is the rate at which
      * the master is querying the slave.
+     *
      * @param pollrate integer poll rate
      * @return true if poll rate was succesfully set
      */
     public boolean setPollrate(int pollrate) {
-        if(pollrate < 0 || pollrate > POLL_RATE_MAX)
+        if (pollrate < 0 || pollrate > POLL_RATE_MAX)
             return false;
 
         this._pollRate = pollrate;
@@ -82,6 +81,7 @@ public enum RS232Configuration {
      * before giving up and raising a connection failure events. Once this
      * limit is reached, the polling thread will raise a connection failure event
      * until either the polling loop is stopped or the target comes back online.
+     *
      * @return int
      * @since 1.2.5
      */
@@ -94,7 +94,7 @@ public enum RS232Configuration {
      * determines how many communication failures (e.g. non-responsive, IOExceptions, etc.)
      * before connection falilure events begin being emitted. The limit must be greater than
      * or equal to 0.
-     *
+     * <p/>
      * Default: 5
      *
      * @param limit int
@@ -102,34 +102,31 @@ public enum RS232Configuration {
      * @since 1.2.5
      */
     public boolean setPollRetryLimit(int limit) {
-        if(limit < 0)
+        if (limit < 0)
             return false;
         this._poll_retry_limit = limit;
         return true;
     }
 
-    /**    
+    /**
      * @return true if ACK requires toggling
      */
-    boolean getAck() { return this._ack; }
+    boolean getAck() {
+        return this._ack;
+    }
+
     /**
      * Track that the ACK has been toggled
      */
-    void toggleAck() { this._ack = !this._ack; }
+    void toggleAck() {
+        this._ack = !this._ack;
+    }
 
     /**
-     * @return  the current event mask
+     * @return the current event mask
      */
     public int getEventMask() {
         return this._evMask;
-    }
-    
-    /**     
-     * @return the current mask used for enabling or disabling acceptance <br>
-     * of notes.
-     */
-    public int getEnableMask() {
-        return this._edMask;
     }
 
     /**
@@ -138,11 +135,20 @@ public enum RS232Configuration {
      * notification for.
      * The mask is a bitwise integer where 1 indicates active and indicates <br>
      * inactive.
-     * @param mask  bitwise event mask
+     *
+     * @param mask bitwise event mask
      * @see com.pyramidacceptors.ptalk.api.RS232Configuration.RS232State for bit indicies
      */
     public void setEventMask(int mask) {
-       this._evMask = mask;
+        this._evMask = mask;
+    }
+
+    /**
+     * @return the current mask used for enabling or disabling acceptance <br>
+     * of notes.
+     */
+    public int getEnableMask() {
+        return this._edMask;
     }
 
     /**
@@ -150,6 +156,7 @@ public enum RS232Configuration {
      * features via a bit mask. This implementation supports an integer mask <br>
      * where 1 indicates the feature is enabled and 0 indicates that it is<br>
      * disabled.
+     *
      * @param mask bitwise enable/disable mask. Set bit position to 1 to enable, 0 to disable.
      */
     public void setEnableMask(int mask) {
@@ -160,20 +167,27 @@ public enum RS232Configuration {
     /**
      * Enables or disables the bill acceptor. If disabled. the master will still be able to poll
      * and receive status messages from the slave but acceptance is disabled.
+     *
      * @param enabled true to enable, false to disable
      */
-    public void setEnabled(boolean enabled)
-    {
+    public void setEnabled(boolean enabled) {
         this._edMask = (enabled) ? this._edMask_bak : 0;
     }
 
+    /**
+     * @return true if the device is in escrow mode, otherwise false
+     */
+    public boolean getEscrowMode() {
+        return this._escrowmode.get();
+    }
 
     /**
      * Enable or disable escrow mode on the slave device. This puts the host
      * in charge of giving the final accept/reject command.
-     *
+     * <p/>
      * This feature is not correctly implemented so it has been disabled. It was originally
      * based off of a broken VB implementation which did not align with the specs.
+     *
      * @param enable true will enable the device, false will disable
      */
     public void setEscrowMode(boolean enable) {
@@ -182,13 +196,6 @@ public enum RS232Configuration {
         */
     }
 
-    /**
-     * @return true if the device is in escrow mode, otherwise false
-     */
-    public boolean getEscrowMode() {
-        return this._escrowmode.get();
-    }    
-    
     /**
      * The bill acceptor will pass through a series of "States" during bill <br>
      * processing. The acceptor will always be in a "State." If the acceptor<br>
@@ -204,9 +211,9 @@ public enum RS232Configuration {
      * a message sent by the acceptor has been received by the master and a<br>
      * new message is then sent by the master, with a new MSG/ack number,<br>
      * the acceptor should clear the previous event bit that is set when<br>
-     * it sends its next response.    
+     * it sends its next response.
      */
-    public enum RS232State implements IState {    
+    public enum RS232State implements IState {
 
         /**
          * The unit is connected but not enabled
@@ -241,7 +248,7 @@ public enum RS232Configuration {
          */
         Escrowed,
         /**
-         *  The acceptor remains in this state as it transports the bill <br>
+         * The acceptor remains in this state as it transports the bill <br>
          * from the escrow position toward a secure position past all the<br>
          * bill acceptors internal sensors, as well as the stacking <br>
          * mechanism sensors. The acceptor will not change states until<br>
@@ -286,7 +293,7 @@ public enum RS232Configuration {
          * a credit value of (000).
          */
         InvalidMessage,
-        
+
         //Note: Events are reported only once to the master.
         /**
          * After the bill has been successfully stacked into the cashbox,<br>
@@ -312,7 +319,7 @@ public enum RS232Configuration {
          * it to be invalid.
          */
         Rejected,
-        
+
         // Other messages
         /**
          * (controlled by the bill acceptor) When the cassette is present,<br>
@@ -322,5 +329,5 @@ public enum RS232Configuration {
          */
         CassetePresent,
     }
-    
+
 }

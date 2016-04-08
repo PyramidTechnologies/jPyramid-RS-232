@@ -23,36 +23,38 @@ import jssc.SerialPortException;
  * A PyramidDeviceException is thrown by any method that encounters as<br>
  * exceptional circumstance while interacting with device. <br>
  * <br>
+ *
  * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
  * @since 1.0.0.0
  */
 public class PyramidDeviceException extends SerialPortException {
-    
+
     /**
      * Standard message for unsupported devices detected by the API
      */
     public static final String DEVICE_IS_NOT_SUPPORTED =
             "Connected device is not supported";
-    
+
     /**
-    * Standard message for devices that require a firmware request to use a <br>
-    * given feature
-    */
-    public static final String DEVICE_REQUIRES_UPDATE_FOR_THIS_FEATURE = 
+     * Standard message for devices that require a firmware request to use a <br>
+     * given feature
+     */
+    public static final String DEVICE_REQUIRES_UPDATE_FOR_THIS_FEATURE =
             "Connected device requires a firwmare update to access this"
-            + "feature"; 
-    
+                    + "feature";
+
     /**
      * A PyramidDeviceException is any exceptional situation caused by an <br>
      * illegal of a connected device
      * <br>
-     * @param portName String name of the port connecting the slave device
-     * @param methodName Name of method in which exception occurred
+     *
+     * @param portName      String name of the port connecting the slave device
+     * @param methodName    Name of method in which exception occurred
      * @param exceptionType Classification of exception TODO
      */
-    public PyramidDeviceException(String portName, String methodName, 
-            String exceptionType){
+    public PyramidDeviceException(String portName, String methodName,
+                                  String exceptionType) {
         super(portName, methodName, exceptionType);
-    }   
-    
+    }
+
 }

@@ -17,20 +17,21 @@
 
 package com.pyramidacceptors.ptalk.api;
 
-/** 
+/**
  * Provides constant strings and enumerations used for API transactions<br>
  * between client code and the {@code ICommDevice}
  * <br>
+ *
  * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
  * @since 1.0.0.0
  */
 public abstract class APIConstants {
-    
+
     /**
      * String response for client code
      */
     public static final String API_REVISION = "1.2.4";
-    
+
     /**
      * Global, default timeout unless otherwise specified
      */

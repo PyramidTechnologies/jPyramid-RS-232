@@ -17,17 +17,19 @@
 
 package com.pyramidacceptors.ptalk.api;
 
+import com.pyramidacceptors.ptalk.api.event.Events;
+
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Objects;
+
 import static com.pyramidacceptors.ptalk.api.CreditActions.*;
 
-import com.pyramidacceptors.ptalk.api.event.Events;
-import com.pyramidacceptors.ptalk.api.event.PTalkEvent;
-
-import java.util.*;
-
 /**
- * Pyramid Technologies, Inc. 
+ * Pyramid Technologies, Inc.
  * Product: Pyramid API
- * Date: 15-07-2014 
+ * Date: 15-07-2014
  */
 
 /**
@@ -37,82 +39,63 @@ import java.util.*;
  * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
  */
 class RS232Packet {
-    
-    private final List<Byte> data = new ArrayList<>();    
-    private final EnumSet<Events> event = EnumSet.noneOf(Events.class);
-    
-    private CreditActions creditAction = NONE;
-    private String message = "";
-    private BillNames billName;
-
-    private byte firmwareRevision;
-    private byte acceptorModel;
 
     public static final String NO_RESPONSE = "No Response";
     public static final String BAD_MESSAGE_LENGTH = "Bad Message Length";
     public static final String BAD_CHECKSUM = "Bad checksum";
     public static final String NO_CONNECTION = "Acceptor Bus/Not Connected";
+    private static final byte[] reset = new byte[]{0x02, 0x08, 0x60, 0x7f, 0x7f, 0x7f, 0x03};
+    private static final byte[] serialNumber = new byte[]{0x02, 0x08, 0x20, 0x7f, 0x7f, 0x7f, 0x03};
+    private final List<Byte> data = new ArrayList<>();
+    private final EnumSet<Events> event = EnumSet.noneOf(Events.class);
+    private CreditActions creditAction = NONE;
+    private String message = "";
+    private BillNames billName;
+    private byte firmwareRevision;
+    private byte acceptorModel;
+
+    /**
+     * Creates a new, empty RS232 packet
+     */
+    RS232Packet() {
+    }
+
+    /**
+     * Create a new RS232 packet initialized with the byte array {@code bytes}
+     *
+     * @param bytes
+     * @throws IllegalAccessException when bytes is null
+     */
+    RS232Packet(byte[] bytes) {
+        if (!(bytes instanceof byte[]))
+            throw new IllegalArgumentException("bytes must not be null");
+        for (byte b : bytes)
+            data.add(b);
+    }
 
     /**
      * Returns the raw bytes that are sent for a reset request
+     *
      * @return
      */
-    public static byte[] resetBytes () {
+    public static byte[] resetBytes() {
         return reset.clone();
     }
 
     /**
      * Returns the raw bytes that are sent for a serial number request
+     *
      * @return
      */
-    public static byte[] serialNumberBytes () {
+    public static byte[] serialNumberBytes() {
         return serialNumber.clone();
     }
 
-    private static final byte[] reset = new byte[]{0x02, 0x08, 0x60, 0x7f, 0x7f,  0x7f,  0x03};
-    private static final byte[] serialNumber = new byte[]{0x02, 0x08, 0x20, 0x7f, 0x7f,  0x7f,  0x03};
-
-    /**
-     * Creates a new, empty RS232 packet
-     */
-    RS232Packet(){}
-    
-    /**
-     * Create a new RS232 packet initialized with the byte array {@code bytes}
-     * @param bytes
-     * @throws IllegalAccessException when bytes is null
-     */
-    RS232Packet(byte[] bytes) {
-        if(!(bytes instanceof byte[]))
-            throw new IllegalArgumentException("bytes must not be null");
-        for(byte b : bytes)
-            data.add(b);
-    }
-
     /**
      * Assert that this packet is of proper structure and matches<br>
      * checksum<br>.
      * <br>
-     * @return true is valid, otherwise false
-     */
-    public boolean isValid() {
-        if(data.size() != 11)
-            return false;
-
-        if(data.get(0) != 0x02)
-            return false;
-
-        byte checksum = (byte)(data.get(1) ^ data.get(2));
-        for(int i=3;i<9;i++) {
-            checksum ^= data.get(i);
-        }        
-        return (checksum == data.get(10));     
-    }
-
-    /**
-     * Assert that this packet is of proper structure and matches<br>
-     * checksum<br>.
-     * <br>
+     *
      * @return true is valid, otherwise false
      */
     public static boolean isValid(byte[] arr) {
@@ -120,18 +103,39 @@ class RS232Packet {
     }
 
     /**
+     * Assert that this packet is of proper structure and matches<br>
+     * checksum<br>.
+     * <br>
+     *
+     * @return true is valid, otherwise false
+     */
+    public boolean isValid() {
+        if (data.size() != 11)
+            return false;
+
+        if (data.get(0) != 0x02)
+            return false;
+
+        byte checksum = (byte) (data.get(1) ^ data.get(2));
+        for (int i = 3; i < 9; i++) {
+            checksum ^= data.get(i);
+        }
+        return (checksum == data.get(10));
+    }
+
+    /**
      * @return byte[] of this packet in its current state
      */
     public byte[] toBytes() {
         byte[] o = new byte[data.size()];
-        for(int i=0; i<data.size(); i++)
+        for (int i = 0; i < data.size(); i++)
             o[i] = data.get(i);
         return o;
     }
 
     /**
-     *  @return the length in bytes of this packet
-     */    
+     * @return the length in bytes of this packet
+     */
     public int size() {
         return data.size();
     }
@@ -146,13 +150,14 @@ class RS232Packet {
     /**
      * Performs checksum and any other enveloping required by <br>
      * the protocol.
+     *
      * @return RS232Packet a reference to this RS232Packet
      */
     public RS232Packet pack() {
-        byte checksum = (byte)(data.get(1) ^ data.get(2));
-        for(int i=3;i<data.size()-1;i++) {
+        byte checksum = (byte) (data.get(1) ^ data.get(2));
+        for (int i = 3; i < data.size() - 1; i++) {
             checksum ^= data.get(i);
-        }        
+        }
         data.add(checksum);
         return this;
     }
@@ -160,12 +165,13 @@ class RS232Packet {
     /**
      * Replaces the Object at {@code index} with the value {@code b}. If <br>
      * {@code index} is invalid or {@code b} is invalid, this returns false.
+     *
      * @param index of element to replace
-     * @param b element to replace current item with
+     * @param b     element to replace current item with
      * @return true on success
      */
     public boolean replace(int index, byte b) {
-        if(index < 0 || index > (this.data.size()-1))
+        if (index < 0 || index > (this.data.size() - 1))
             return false;
         this.data.set(index, b);
         return true;
@@ -173,99 +179,101 @@ class RS232Packet {
 
     /**
      * Logical OR the byte at the given index
+     *
      * @param index of byte to OR
-     * @param b byte to OR with
+     * @param b     byte to OR with
      * @return true on success
      */
     public boolean or(int index, byte b) {
-        if(index < 0 || index > (this.data.size()-1))
+        if (index < 0 || index > (this.data.size() - 1))
             return false;
         byte o = this.data.get(index);
-        this.data.set(index, (byte)(o | b));
+        this.data.set(index, (byte) (o | b));
         return true;
     }
 
     /**
      * Parse the given byte array as a new packet.
+     *
      * @param bytes to parse
      * @return new, fully parsed RS232Packet
      */
     public RS232Packet parseAsNew(byte[] bytes) {
-        for(byte b : bytes)
+        for (byte b : bytes)
             this.data.add(b);
 
         // Get handle on configuration
         RS232Configuration config = RS232Configuration.INSTANCE;
         // Do not process invalid messages, do not alter ACK if invalid
-        if(sum(data) == 0) {
-            
+        if (sum(data) == 0) {
+
             // Don't modify the data to send (nextMsg)
             message = NO_CONNECTION;
-          
-        } else if((data.size() == 11) && isValid()) {
-            
+
+        } else if ((data.size() == 11) && isValid()) {
+
             // Message looks good, next one will toggle the ack
             config.toggleAck();
-            
+
             // States - Only one allowed at a time
             byte t3 = data.get(3);
-            if((t3 & 1) == 1)
+            if ((t3 & 1) == 1)
                 event.add(Events.Idling);
             else if ((t3 & 2) == 2)
                 event.add(Events.Accepting);
             else if ((t3 & 4) == 4)
                 event.add(Events.Escrowed);
-            else if((t3 & 8) == 8)
+            else if ((t3 & 8) == 8)
                 event.add(Events.Stacking);
-            else if((t3 & 0x20) == 0x20)
+            else if ((t3 & 0x20) == 0x20)
                 event.add(Events.Returning);
-            
-            if((t3 & 0x10) == 0x10) {
+
+            if ((t3 & 0x10) == 0x10) {
                 event.add(Events.Idling);
                 event.add(Events.Stacked);      // Be sure to clear the stack, return bits
             }
-            if((t3 & 0x40) == 0x40){
+            if ((t3 & 0x40) == 0x40) {
                 event.add(Events.Idling);
                 event.add(Events.Returned);    // Be sure to clear the stack, return bits
             }
 
             // Events - There can be multiple
             byte t4 = data.get(4);
-            if((t4 & 1) == 1)
+            if ((t4 & 1) == 1)
                 event.add(Events.Cheated);
-            if((t4 & 2) == 2)
-                event.add(Events.BillRejected);                
-            if((t4 & 4) == 4)
-                event.add(Events.BillJammed);                
-            if((t4 & 8) == 8)             
-                event.add(Events.StackerFull);                
-            if((t4 & 0x10) == 0)       
+            if ((t4 & 2) == 2)
+                event.add(Events.BillRejected);
+            if ((t4 & 4) == 4)
+                event.add(Events.BillJammed);
+            if ((t4 & 8) == 8)
+                event.add(Events.StackerFull);
+            if ((t4 & 0x10) == 0)
                 event.add(Events.BillCasetteRemoved);
 
             // Errors - there can be multiple
             byte t5 = (data.get(5));
-            if((t5 & 1) == 1)
+            if ((t5 & 1) == 1)
                 event.add(Events.PowerUp);
-            if((t5 & 2) == 2)
+            if ((t5 & 2) == 2)
                 event.add(Events.InvalidCommand);
-            if((t5 & 4) == 4)
+            if ((t5 & 4) == 4)
                 event.add(Events.Failure);
-            
+
             // Get the bill reported by the slave
-            byte credit = (byte)((t5 & 0x38) >> 3);
-            
+            byte credit = (byte) ((t5 & 0x38) >> 3);
+
             // Check if this bill is enabled. If so, send Accept,
             // otherwise send return
-            if(credit != 0 && event.contains(Events.Escrowed)) {
+            if (credit != 0 && event.contains(Events.Escrowed)) {
 
-                if( (config.getEnableMask() & (1 << credit - 1)) > 0)
+                if ((config.getEnableMask() & (1 << credit - 1)) > 0)
                     creditAction = ACCEPT;
                 else
-                    creditAction = RETURN;    
+                    creditAction = RETURN;
             }
-                
+
             //Check for a valid credit                      
-            if(event.contains(Events.Stacked)) {
+            if (event.contains(Events.Stacked)) {
                 event.add(Events.Credit);
                 billName = BillNames.fromByte(credit);
             }
@@ -279,17 +287,18 @@ class RS232Packet {
 
             // Else set the informative error message!
         } else {
-            if(data.size() != 11)
+            if (data.size() != 11)
                 message = BAD_MESSAGE_LENGTH;
             else
                 message = BAD_CHECKSUM;
         }
-        
+
         return this;
     }
 
     /**
      * Returns the event, state, and message flags associated with this packet
+     *
      * @return EnumSet of all events enabled or signaled by this packet
      */
     public EnumSet<Events> getInterpretedEvents() {
@@ -298,10 +307,11 @@ class RS232Packet {
 
     /**
      * Get any message associated with this packet as a string
+     *
      * @return string
      */
     public String getMessage() {
-        if(this.message.equals("") && (billName != null))
+        if (this.message.equals("") && (billName != null))
             return this.billName.toString();
         else
             return this.message;
@@ -310,6 +320,7 @@ class RS232Packet {
     /**
      * Returns the firmware revision as reported by the slave. The revision
      * is in the format Major.minor. e.g. 1.11
+     *
      * @return string
      */
     public byte getFirmwareRevision() {
@@ -319,6 +330,7 @@ class RS232Packet {
     /**
      * Return the model code as reported by the slave. The model is
      * an encoded AcceptorModel enum.
+     *
      * @return byte
      */
     public byte getAcceptorModel() {
@@ -341,19 +353,21 @@ class RS232Packet {
 
     /**
      * Integer Sum of all bytes in the bytes list
+     *
      * @param d
      * @return
      */
     private int sum(List<Byte> d) {
-        Integer sum= 0;
-        for (byte i:d)
-            sum+=i;
+        Integer sum = 0;
+        for (byte i : d)
+            sum += i;
         return sum;
     }
 
     /**
      * Returns the byte string form of this packet. e.g.
      * 0x02 0x0B 0x20....
+     *
      * @return
      */
     public String getByteString() {
@@ -362,44 +376,44 @@ class RS232Packet {
 
     /**
      * {@inheritDoc}
-     */    
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        if(message.equals("")) {
+        if (message.equals("")) {
             sb.append(String.format("Command - Raw: %s", getByteString()));
         } else {
             sb.append(String.format("Response - Raw: %s", getByteString()));
             sb.append(String.format("Event: %s", this.event.toString()));
             sb.append(String.format("Message: %s", this.message));
         }
-        
+
         return sb.toString();
     }
-    
+
     /**
      * {@inheritDoc}
-     */    
+     */
     @Override
     public boolean equals(Object object) {
-        if(!(object instanceof RS232Packet))
+        if (!(object instanceof RS232Packet))
             return false;
-        
-        RS232Packet cmp = new RS232Packet(((RS232Packet)object).toBytes());
-        if(data.size() != cmp.size())
+
+        RS232Packet cmp = new RS232Packet(((RS232Packet) object).toBytes());
+        if (data.size() != cmp.size())
             return false;
-        
-        for(int i=0; i<data.size(); i++) {
-            if(data.get(i) != cmp.get(i))
+
+        for (int i = 0; i < data.size(); i++) {
+            if (data.get(i) != cmp.get(i))
                 return false;
         }
-        
+
         return true;
     }
 
     /**
      * {@inheritDoc}
-     */    
+     */
     @Override
     public int hashCode() {
         int hash = 3;

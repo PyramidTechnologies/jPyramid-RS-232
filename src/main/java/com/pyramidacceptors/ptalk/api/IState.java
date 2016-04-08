@@ -18,17 +18,18 @@
 package com.pyramidacceptors.ptalk.api;
 
 /**
- * Pyramid Technologies, Inc. 
+ * Pyramid Technologies, Inc.
  * Product: Pyramid API
- * Date: 14-07-2014 
+ * Date: 14-07-2014
  */
 
 /**
  * All alternate states must implement this interface. A State describes any
  * events, errors, or state changes on the slave device. States should be <br>
  * implemented as an enum and embedded in the IConfiguration implementation.
- * 
+ *
  * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
  * @since 1.0.0.0
  */
-public interface IState { }
+public interface IState {
+}

@@ -18,16 +18,17 @@
 package com.pyramidacceptors.ptalk.api.event;
 
 /**
- * Pyramid Technologies, Inc. 
+ * Pyramid Technologies, Inc.
  * Product: Pyramid API
- * Date: 15-07-2014 
+ * Date: 15-07-2014
  */
+
 /**
- * The bill acceptor will pass through a series of "States" during bill 
+ * The bill acceptor will pass through a series of "States" during bill
  * processing. The acceptor will always be in a " State." If the acceptor
  * is waiting for a bill insertion, it will report an "Idle" state to the
  * master. If the acceptor is reading a bill , i t will b e reporting
- * an "Accepting" state to the master. Only one state can be set at a 
+ * an "Accepting" state to the master. Only one state can be set at a
  * time. The acceptor m a y also have a reported "Event" taking place.
  * For example, if the acceptor has just stacked a bill in the
  * "Stacking Mechanism", it will report a "Stacked" event and since it
@@ -39,7 +40,7 @@ package com.pyramidacceptors.ptalk.api.event;
  * the acceptor should clear the  previous event bit that is set when
  * it sends its next response.
  * <img src="../../../../../doc-files/StatesVEvents.png" alt="RS-232 State Machine">
- * 
+ *
  * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
  * @since 1.0.0.0
  */
@@ -49,15 +50,15 @@ public enum Events {
      * The bill acceptor has not processed a bill and is
      * waiting for a bill to be inserted. There are no problems
      * with the acceptor is this state.
-     */    
+     */
     Idling(1),
     /**
-     * In this state, a bill is being received through the acceptor. The 
-     * bill has not reached the "Escrow" position yet. 
-     */    
+     * In this state, a bill is being received through the acceptor. The
+     * bill has not reached the "Escrow" position yet.
+     */
     Accepting(1 << 1),
     /**
-     * The bill is valid and in sitting inside the bill acceptor. 
+     * The bill is valid and in sitting inside the bill acceptor.
      * The "Escrow State" reports the bill value field and will indicate
      * the denomination of the bill. If the bill is invalid, the state
      * of escrow would never be reported. When the acceptor first powers
@@ -66,23 +67,23 @@ public enum Events {
      * (unknown value). The master would then send a return message
      * to the acceptor. The acceptor finishes with a returned event,
      * then it goes back to the idle state.
-     */    
+     */
     Escrowed(1 << 2),
     /**
-     *  The acceptor remains in this state as it transports the bill 
+     * The acceptor remains in this state as it transports the bill
      * from the escrow position toward a secure position past all the
-     * bill acceptors internal sensors, as well as the stacking 
+     * bill acceptors internal sensors, as well as the stacking
      * mechanism sensors. The acceptor will not change states until
      * the bill is stacked or jammed. During power up if a bill is not
      * in the escrow position, this state bit and the power up bit will
      * be reported.
-     */    
+     */
     Stacking(1 << 3),
     /**
      * After the bill has been successfully stacked into the cashbox,
      * this event is reported. The master will then issues the credit
      * for the bill.
-     */    
+     */
     Stacked(1 << 4),
     /**
      * This state is set for the purpose of returning a bill to the
@@ -93,25 +94,25 @@ public enum Events {
      * the acceptor to take a particular bill of valid currency. A
      * rejected message is sent because the acceptor found the bill
      * to be not valid.
-     */    
+     */
     Returning(1 << 5),
     /**
-      * When the master tells the slave to return a bill
-      * (After an Escrowed message), this message is sent after the bill
-      * has been successfully returned to the patron. This bill was valid
-      * but for some reason, the master wanted it to be returned.
-      */    
+     * When the master tells the slave to return a bill
+     * (After an Escrowed message), this message is sent after the bill
+     * has been successfully returned to the patron. This bill was valid
+     * but for some reason, the master wanted it to be returned.
+     */
     Returned(1 << 6),
     /**
-      * If the acceptor perceives a bill as being manipulated, this event
-      * reports it. The bill may be returned to the patron, or be stacked
-      * with no credit issued. (Bill Value Field = 000)
-      */    
+     * If the acceptor perceives a bill as being manipulated, this event
+     * reports it. The bill may be returned to the patron, or be stacked
+     * with no credit issued. (Bill Value Field = 000)
+     */
     Cheated(1 << 7),
     /**
      * A bill will be returned to the patron because the acceptor found
      * it to be invalid.
-     */    
+     */
     BillRejected(1 << 8),
     /**
      * The acceptor can not stack a bill or return the bill due to an
@@ -119,19 +120,19 @@ public enum Events {
      * stopped trying to complete the operation (stack or return). If
      * the jammed bill is removed, the acceptor will automatically exit
      * this state.
-     */    
+     */
     BillJammed(1 << 9),
     /**
-    * If this state has been reported, the acceptor can no longer
-    * accept any bills. Usually, this indicates that the cashbox is full.
-    */    
+     * If this state has been reported, the acceptor can no longer
+     * accept any bills. Usually, this indicates that the cashbox is full.
+     */
     StackerFull(1 << 10),
     /**
      * (controlled by the bill acceptor) When the cassette is present,
-     * this bit will be set to a logic high. If there is no cassette, 
+     * this bit will be set to a logic high. If there is no cassette,
      * the bit will be cleared. Therefore, the acceptor will not accept
      * any bills. Note: not used on
-     */    
+     */
     BillCasetteRemoved(1 << 11),
     /**
      * The unit is just powering up and is not ready to accept bills.
@@ -146,7 +147,7 @@ public enum Events {
      * a condition exists that prevents the bill acceptor from accepting
      * any more currency. For example, a sensor may have failed, then
      * the acceptor will enter this state.
-     */    
+     */
     Failure(1 << 14),
     /**
      * A valid credit message has been received.
@@ -154,7 +155,7 @@ public enum Events {
     Credit(1 << 15),
     /**
      * Raised whenever serial data is sent or received
-      */
+     */
     SerialData(1 << 16),
     /**
      * Serial communication is broken. Either the transmission is failing because the port
@@ -171,16 +172,16 @@ public enum Events {
      * we're not quite sure what.
      */
     Generic(1 << 30);
-    
+
     private final int event;
-    
-    Events(int val){
+
+    Events(int val) {
         this.event = val;
     }
-    
-    /**     
+
+    /**
      * @return the unique integer ID of this event. This may coincide with
-     * with the ordinal number but ordinal should not be relied up. Use 
+     * with the ordinal number but ordinal should not be relied up. Use
      * IntId for all type switching on this event.
      */
     public int getIntId() {

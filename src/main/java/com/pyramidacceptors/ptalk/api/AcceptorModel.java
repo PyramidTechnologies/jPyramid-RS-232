@@ -6,32 +6,33 @@ import java.util.Arrays;
  * Acceptor Model enumeration as reported by Pyramid products. This will not be accurate
  * for other bill acceptor manufacturers.
  * Created by cory on 2/17/2016.
+ *
  * @since 1.2.3
  */
 public class AcceptorModel {
 
     public static final String Apex52USA = "Apex 5200 USA";
     public static final String Apex54USA = "Apex 5400 USA";
-    public static final String Apex56USA =         "Apex 5600 USA";
-    public static final String Apex52FOR =         "Apex 5200 Foreign";
-    public static final String Apex54FOR =         "Apex 5400 Foreign";
-    public static final String Apex56FOR =             "Apex 5600 Foreign";
-    public static final String Trilogy =             "Trilogy";
-    public static final String Aqua =             "Aqua";
-    public static final String Phoenix =             "Phoenix";
-    public static final String Curve =             "Curve";
-    public static final String Pro2 =             "Pro2";
-    public static final String Unused =             "unused";
-    public static final String Apex72USA =             "Apex 7200";
-    public static final String Apex74USA =             "Apex 7400";
-    public static final String Apex76USA =             "Apex 7600";
-    public static final String Apex72FOR =             "Apex 7200";
-    public static final String Apex74FOR =             "Apex 7400";
-    public static final String Apex76FOR =             "Apex 7600";
-    public static final String SpectraS4USA =             "Spectra S4";
-    public static final String SpectraS6USA =             "Spectra S6";
-    public static final String SpectraS4FOR =             "Spectra S4";
-    public static final String SpectraS6FOR =             "Spectra S6";
+    public static final String Apex56USA = "Apex 5600 USA";
+    public static final String Apex52FOR = "Apex 5200 Foreign";
+    public static final String Apex54FOR = "Apex 5400 Foreign";
+    public static final String Apex56FOR = "Apex 5600 Foreign";
+    public static final String Trilogy = "Trilogy";
+    public static final String Aqua = "Aqua";
+    public static final String Phoenix = "Phoenix";
+    public static final String Curve = "Curve";
+    public static final String Pro2 = "Pro2";
+    public static final String Unused = "unused";
+    public static final String Apex72USA = "Apex 7200";
+    public static final String Apex74USA = "Apex 7400";
+    public static final String Apex76USA = "Apex 7600";
+    public static final String Apex72FOR = "Apex 7200";
+    public static final String Apex74FOR = "Apex 7400";
+    public static final String Apex76FOR = "Apex 7600";
+    public static final String SpectraS4USA = "Spectra S4";
+    public static final String SpectraS6USA = "Spectra S6";
+    public static final String SpectraS4FOR = "Spectra S4";
+    public static final String SpectraS6FOR = "Spectra S6";
     public static final String UnsupportedDevice = "Unsupported Device";
     public static final String UnknownDevice = "Unknown Device";
     public static final String InvalidDevice = "Invalid Device";
@@ -60,8 +61,7 @@ public class AcceptorModel {
             0x0D  // Pro2
     };
     /**
-
-    /**
+     * /**
      * Complete list of all models we have ever made
      */
     private static final String[] MAKE_NAME_LOOKUP_TABLE = new String[]{
@@ -106,6 +106,7 @@ public class AcceptorModel {
 
     /**
      * Retrieve model name from lookup table using standard acctype code
+     *
      * @param model byte
      * @return String
      */

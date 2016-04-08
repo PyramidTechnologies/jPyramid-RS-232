@@ -17,33 +17,34 @@
 
 package com.pyramidacceptors.ptalk.api;
 
-import com.pyramidacceptors.ptalk.api.event.*;
-import java.util.concurrent.CopyOnWriteArrayList;
-
+import com.pyramidacceptors.ptalk.api.event.Events;
+import com.pyramidacceptors.ptalk.api.event.PTalkEvent;
+import com.pyramidacceptors.ptalk.api.event.PTalkEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * The Pyramid Acceptor class is the realization of an {@code ICommDevice}.<br>
  * It uses a RS-232 socket by default.<br>
  * <br>
+ *
  * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
  * @since 1.0.0.0
  */
 public class PyramidAcceptor implements ICommDevice, RS232EventListener {
     private final Logger logger = LoggerFactory.getLogger(PyramidAcceptor.class);
-
-    private Courier courier;
-    private final PyramidPort port;    
-
+    private final PyramidPort port;
     // Use CopyOnWriteArrayList to avoid ConcurrentModificationExceptions if a
     // listener attempts to remove itself during event notification.
-    private final CopyOnWriteArrayList<PTalkEventListener> listeners 
+    private final CopyOnWriteArrayList<PTalkEventListener> listeners
             = new CopyOnWriteArrayList<>();
-    
+    private Courier courier;
+
     /**
      * Create a new PyramidAcceptor
-     * 
+     *
      * @param port string port name
      */
     private PyramidAcceptor(PyramidPort port) {
@@ -57,61 +58,64 @@ public class PyramidAcceptor implements ICommDevice, RS232EventListener {
     private PyramidAcceptor() {
         this.port = null;
     }
-    
+
     /**
      * Instantiate a new Pyramid Acceptor with an existing port<br>
      * <br>
+     *
      * @param portName OS string name of the port this is connected to
      * @return New instance of PyramidAcceptor
      * @throws com.pyramidacceptors.ptalk.api.PyramidDeviceException thrown if underlying port
-     * cannot be opened.
+     *                                                               cannot be opened.
      */
     public static PyramidAcceptor valueOfRS232(String portName) throws PyramidDeviceException {
         return new PyramidAcceptor(new PyramidPort.PortBuilder(portName).build());
     }
-    
+
     /**
      * Generate a new PyramidAcceptor with a custom port configuration. This
      * instance of PyramidPort will still use the standard RS-232 packet unless
      * otherwise specified.
-     * 
-     * @param config Configuration to use
+     *
+     * @param config   Configuration to use
      * @param portName OS name of port
      * @param baudRate integer baud rate
      * @param databits number of bits per unit of data
      * @param stopbits bits to indicate end of data
-     * @param parity type of parity
+     * @param parity   type of parity
      * @return new instance of PyramidAcceptor
      * @throws com.pyramidacceptors.ptalk.api.PyramidDeviceException thrown if underlying port
-     * cannot be opened.
+     *                                                               cannot be opened.
      */
     public static PyramidAcceptor valueOfRS232(RS232Configuration config, String portName, int baudRate,
-            int databits, int stopbits, int parity) throws PyramidDeviceException {
-            return new PyramidAcceptor(new PyramidPort.PortBuilder(portName)
-                    .baudRate(baudRate).dataBits(databits).stopBits(stopbits)
-                    .parity(parity).build());
+                                               int databits, int stopbits, int parity) throws PyramidDeviceException {
+        return new PyramidAcceptor(new PyramidPort.PortBuilder(portName)
+                .baudRate(baudRate).dataBits(databits).stopBits(stopbits)
+                .parity(parity).build());
 
     }
-    
+
     /**
      * Attempt to autodetect the connected slave and use a default RS-232<br>
      * configuration.
+     *
      * @return a new instance of PyramidAcceptor
      * @throws com.pyramidacceptors.ptalk.api.PyramidDeviceException thrown if underlying port
-     * cannot be opened.
+     *                                                               cannot be opened.
      */
     public static PyramidAcceptor valueOfRS232() throws PyramidDeviceException {
         String portName = PortScanner.find();
-        if(!portName.equals("")){
+        if (!portName.equals("")) {
             return new PyramidAcceptor(new PyramidPort.PortBuilder(portName).build());
         } else {
-            throw new PyramidDeviceException("Unable to autodetect device", 
+            throw new PyramidDeviceException("Unable to autodetect device",
                     "", "");
         }
     }
 
     /**
      * Returns an object that does not touch any serial ports.
+     *
      * @return PyramidAcceptor dummy instance (no physical port connection)
      */
     public static PyramidAcceptor asTest() {
@@ -125,6 +129,7 @@ public class PyramidAcceptor implements ICommDevice, RS232EventListener {
      * messages have been received. This may occur during first power up. Also
      * note that this field is reported on every message so it is normal to check
      * back periodically until you have a valid firmware revision string
+     *
      * @return string
      */
     public String getFirmwareRevision() {
@@ -135,6 +140,7 @@ public class PyramidAcceptor implements ICommDevice, RS232EventListener {
      * Returns the model of the target acceptor in the format This may AcceptorModel.Unknown
      * until the 1st valid slave message is received. Also note that this field is reported on
      * every message so it is normal to check back periodically until you have a valid acceptor model.
+     *
      * @return string
      */
     public String getAcceptorModel() {
@@ -146,9 +152,10 @@ public class PyramidAcceptor implements ICommDevice, RS232EventListener {
      * next message loop so the delay may be up to the poll rate set in your RS-232
      * configuration. The acceptor will take at least 500ms to become available once
      * the reset has been performed.
+     *
      * @since 1.2.4
      */
-    public void requestReset(){
+    public void requestReset() {
         courier.requestReset();
     }
 
@@ -156,17 +163,19 @@ public class PyramidAcceptor implements ICommDevice, RS232EventListener {
      * Request the slave to report its serial number in the next message loop.
      * Requires USA firmware 1.12 or newer. For foreign models, please contact
      * PTI for more information.
+     *
      * @since 1.2.5
      */
-    public void requestSerialNumber(){
+    public void requestSerialNumber() {
         courier.requestSerialNumer();
     }
 
     /**
      * Returns the 9-digit serial number of the target acceptor. This requires USA firmware 1.12
      * or newer. For other countries, please contact PTI.
-     *
+     * <p/>
      * If no valid response is available or received, an empty string will be returned.
+     *
      * @return String
      */
     public String getSerialNumber() {
@@ -178,42 +187,44 @@ public class PyramidAcceptor implements ICommDevice, RS232EventListener {
      * Subscribe to events generated by this instance<br>. To apply an<br>
      * event filter, please set the eventMask in the relevant IConfiguration<br>
      * implemenmation.
+     *
+     * @param l PTalkEventListener subscriber object
      * @see com.pyramidacceptors.ptalk.api.RS232Configuration
      * @see com.pyramidacceptors.ptalk.api.RS232Configuration
      * <br>
-     * @param l PTalkEventListener subscriber object
      */
     public void addChangeListener(PTalkEventListener l) {
-      this.listeners.add(l);
+        this.listeners.add(l);
     }
 
     /**
      * Unsubscribe to events generated by this instance<br>. To apply an <br>
      * event filter, please set the eventMask in the relevant IConfiguration<br>
      * implemenmation.
+     *
+     * @param l PTalkEventListener
      * @see com.pyramidacceptors.ptalk.api.RS232Configuration
      * @see com.pyramidacceptors.ptalk.api.RS232Configuration
-    * <br>
-    * @param l PTalkEventListener
-    */    
+     * <br>
+     */
     public void removeChangeListener(PTalkEventListener l) {
-      this.listeners.remove(l);
-    }   
-    
+        this.listeners.remove(l);
+    }
+
     private void fireChangeEvent(PTalkEvent e) {
-        for(PTalkEventListener l : listeners) {
+        for (PTalkEventListener l : listeners) {
             l.changeEventReceived(e);
         }
     }
-    
+
     @Override
-    public void connect() {             
+    public void connect() {
         try {
-            
+
             // If port is already open or can be opened successfully,
             // create a new courier and start polling
-            if(port.isOpen() || port.openPort()) {
-                
+            if (port.isOpen() || port.openPort()) {
+
                 courier = new Courier(port, new RS232Socket());
                 courier.addChangeListener(this);
                 courier.start();
@@ -226,33 +237,33 @@ public class PyramidAcceptor implements ICommDevice, RS232EventListener {
                 logger.error("Failed to connect device on port {}",
                         port.getPortName());
             }
-            
-        }catch(PyramidDeviceException ex) {
+
+        } catch (PyramidDeviceException ex) {
             logger.error("Failed to connect: {}", ex);
         }
     }
 
     @Override
-    public void disconnect() {      
-       
+    public void disconnect() {
+
         try {
             // Stop the message courier
-            if(courier != null) {
+            if (courier != null) {
                 courier.stopThread();
                 courier.removeChangeListener(this);
             }
-            
+
             // And then see if we can close the port...
-            if(port.closePort()) {
+            if (port.closePort()) {
                 logger.info("Disconnect device from port {}",
                         port.getPortName());
-            
+
             } else {
                 logger.error("Failed to disconnect device on port {}",
                         port.getPortName());
             }
-            
-        } catch(PyramidDeviceException ex) {
+
+        } catch (PyramidDeviceException ex) {
             logger.error("Failed to disconnect: {}", ex);
         }
     }
@@ -261,7 +272,7 @@ public class PyramidAcceptor implements ICommDevice, RS232EventListener {
     public int getPollRate() {
         return RS232Configuration.INSTANCE.getPollrate();
     }
-    
+
     @Override
     public boolean setPollRate(int rate) {
         boolean result = RS232Configuration.INSTANCE.setPollrate(rate);
@@ -299,7 +310,7 @@ public class PyramidAcceptor implements ICommDevice, RS232EventListener {
         int eventMask = RS232Configuration.INSTANCE.getEventMask();
 
         // Filters out events that the client is not subscribed to
-        if((event.getIntId() & eventMask) != event.getIntId()) {
+        if ((event.getIntId() & eventMask) != event.getIntId()) {
             return;
         }
         // Otherwise, raise a normal event

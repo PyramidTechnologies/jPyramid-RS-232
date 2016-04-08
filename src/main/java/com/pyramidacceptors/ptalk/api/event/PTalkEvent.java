@@ -15,8 +15,9 @@ public class PTalkEvent extends EventObject {
 
     /**
      * Generates a new PTalk event.
-     * @param source Object that created this event
-     * @param id Events id
+     *
+     * @param source     Object that created this event
+     * @param id         Events id
      * @param rawMessage Stringified packet
      */
     public PTalkEvent(Object source, Events id, String rawMessage) {
@@ -31,20 +32,28 @@ public class PTalkEvent extends EventObject {
     /**
      * Provides a set of events that generated this event
      *
-     * @deprecated Use getId() instead
      * @return EnumSet
+     * @deprecated Use getId() instead
      */
-    public EnumSet<Events> getEventId() { return this.compatiblitySet.clone(); }
+    public EnumSet<Events> getEventId() {
+        return this.compatiblitySet.clone();
+    }
 
     /**
      * Returns the event id for this event.
+     *
      * @return Events
      */
-    public Events getId() { return this.eventId; }
+    public Events getId() {
+        return this.eventId;
+    }
 
     /**
      * Returns the stringified packet that this event was decoded from
+     *
      * @return String
      */
-    public String getPacketString() { return this.packetString; }
+    public String getPacketString() {
+        return this.packetString;
+    }
 }

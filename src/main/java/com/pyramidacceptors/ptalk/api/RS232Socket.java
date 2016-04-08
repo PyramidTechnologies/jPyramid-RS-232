@@ -22,26 +22,29 @@ package com.pyramidacceptors.ptalk.api;
  * A socket acts as the transport layer between a master and slave devce.<br>
  * This transport is responsible for tracking packets and calling the <br>
  * appropriate routines the protocol requires.
- * 
+ * <p/>
  * <a href="http://www.pyramidacceptors.com/files/RS_232.pdf">RS-232 Spec.</a>
+ *
  * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
  * @since 1.0.0.0
  */
 final class RS232Socket {
 
-    private static final int MAX_PACKET_SIZE = 11;  
+    private static final int MAX_PACKET_SIZE = 11;
     //# basic message           0      1     2      3       4      5      6      7
     //                         start, len,  ack,  bills, escrow, resv'd, end, checksum
-    private final byte[] base = new byte[]{0x02, 0x08, 0x10, 0x7F,  0x10,  0x00,  0x03};
+    private final byte[] base = new byte[]{0x02, 0x08, 0x10, 0x7F, 0x10, 0x00, 0x03};
 
     /**
      * Generate a new RS-232 packet. By default, it is configured <br>
      * start with a standard polling message<br>
      */
-    RS232Socket() {}
+    RS232Socket() {
+    }
 
     /**
      * Generates the next master command
+     *
      * @param creditAction Credit action to take based upon last response
      * @return byte[] command to send to slave
      */
@@ -50,27 +53,26 @@ final class RS232Socket {
         RS232Packet packet;
 
         packet = new RS232Packet(base);
-        if(RS232Configuration.INSTANCE.getAck())
-            packet.replace(2, (byte)0x11);
+        if (RS232Configuration.INSTANCE.getAck())
+            packet.replace(2, (byte) 0x11);
 
 
         // Set enabled disable mask
-        packet.replace(3, (byte)RS232Configuration.INSTANCE.getEnableMask());
+        packet.replace(3, (byte) RS232Configuration.INSTANCE.getEnableMask());
 
         // Set the accept, return bits or clear them out
-        switch(creditAction)
-        {
+        switch (creditAction) {
             case ACCEPT:
-                packet.or(4, (byte)0x20);
+                packet.or(4, (byte) 0x20);
                 break;
             case RETURN:
-                packet.or(4, (byte)0x40);
+                packet.or(4, (byte) 0x40);
                 break;
 
 
             case NONE:
             default:
-                packet.replace(4, (byte)0x00);
+                packet.replace(4, (byte) 0x00);
                 break;
         }
 
@@ -82,6 +84,7 @@ final class RS232Socket {
     /**
      * Generates a non-standard command that is outside of the polling
      * loop.
+     *
      * @param content byte[] to insert into the master message. Must 5 or
      *                fewer bytes in length
      * @return byte[] command to send to slave
@@ -97,7 +100,7 @@ final class RS232Socket {
     public RS232Packet parseResponse(byte[] bytes) {
         return new RS232Packet().parseAsNew(bytes);
     }
-    
+
     public int getMaxPacketRespSize() {
         return MAX_PACKET_SIZE;
     }

@@ -4,7 +4,7 @@ import com.pyramidacceptors.ptalk.api.MessageType;
 
 /**
  * Created by cory on 4/7/2016.
- *
+ * <p/>
  * This event encapsulates a packet being sent by this host (master)
  * or send my the target acceptor (slave)
  *
@@ -16,7 +16,8 @@ public class SerialDataEvent extends PTalkEvent {
 
 
     /**
-     * Creates a new event
+     * Creates a new serial data event. This represents and entire master or slave
+     * message as it has been been routed through the message loop.
      *
      * @param source     origin the event
      * @param rawMessage Stringified packet that generated this event
@@ -29,16 +30,9 @@ public class SerialDataEvent extends PTalkEvent {
     }
 
     /**
-     * Returns the MessageType for this event
-     * @return MessageType
-     */
-    public MessageType getMessageType() {
-        return this.messageType;
-    }
-
-    /**
      * Generates a new master, or Tx, type serial data event
-     * @param source Object that raised this event
+     *
+     * @param source  Object that raised this event
      * @param message Stringified packet
      * @return SerialDataEvent
      */
@@ -48,11 +42,21 @@ public class SerialDataEvent extends PTalkEvent {
 
     /**
      * Generates a new slave, or Rx, type serial data event
-     * @param source Object that raised this event
+     *
+     * @param source  Object that raised this event
      * @param message Stringified packet
      * @return SerialDataEvent event containing packet information
      */
     public static SerialDataEvent newRxEvent(Object source, String message) {
         return new SerialDataEvent(source, MessageType.Slave, message);
+    }
+
+    /**
+     * Returns the MessageType for this event
+     *
+     * @return MessageType
+     */
+    public MessageType getMessageType() {
+        return this.messageType;
     }
 }

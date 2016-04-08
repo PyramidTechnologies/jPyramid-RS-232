@@ -20,14 +20,15 @@ package com.pyramidacceptors.ptalk.api.event;
 import com.pyramidacceptors.ptalk.api.BillNames;
 
 /**
- * Pyramid Technologies, Inc. 
+ * Pyramid Technologies, Inc.
  * Product: Pyramid API
- * Date: 16-07-2014 
+ * Date: 16-07-2014
  */
 
 /**
  * Raised when slave raises a Credit event<br>
  * {@link Events#Credit}
+ *
  * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
  */
 public class CreditEvent extends PTalkEvent {
@@ -35,13 +36,14 @@ public class CreditEvent extends PTalkEvent {
     private final BillNames billName;
 
     /**
-     * Creates a new event
+     * Creates a new credit event. This event means that the acceptor has validated
+     * and stacked the specified bill number. The bill cannot be returned once this
+     * event is generated.
      *
-     * @param source     origin the event
+     * @param source     origin of the event
      * @param rawMessage Stringified packet that generated this event
      */
-    public CreditEvent(Object source, String rawMessage, BillNames billName)
-    {
+    public CreditEvent(Object source, String rawMessage, BillNames billName) {
         super(source, Events.Credit, rawMessage);
 
         this.billName = billName;
@@ -49,8 +51,11 @@ public class CreditEvent extends PTalkEvent {
 
     /**
      * Returns the BillName that has been credited
+     *
      * @return BillNames name of bill that has been credited
      */
-    public BillNames getBillName() { return this.billName; }
+    public BillNames getBillName() {
+        return this.billName;
+    }
 
 }

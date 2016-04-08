@@ -20,9 +20,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Pyramid Technologies, Inc. 
+ * Pyramid Technologies, Inc.
  * Product: Pyramid API
- * Date: 14-07-2014 
+ * Date: 14-07-2014
  */
 class PortScanner {
     private static final Logger logger = LoggerFactory.getLogger(PortScanner.class);
@@ -50,18 +50,20 @@ class PortScanner {
                 RS232Configuration.INSTANCE.setPollrate(100);
                 courier = new Courier(port, socket);
                 courier.start();
-                
+
                 // Wait for 10 polls before querying comm status
-                try { Thread.sleep(1000); } 
-                catch (InterruptedException ex) {}                                
-                
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ex) {
+                }
+
                 if (courier.getCommsOkay()) {
                     portName = p;
                 }
-                
+
                 courier.stopThread();
                 port.closePort();
-                
+
             } catch (PyramidDeviceException ex) {
                 logger.error("Unable to open port: {} -> {}", p, ex);
             }

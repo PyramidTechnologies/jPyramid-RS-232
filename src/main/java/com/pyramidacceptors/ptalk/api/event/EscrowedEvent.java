@@ -20,14 +20,15 @@ package com.pyramidacceptors.ptalk.api.event;
 import com.pyramidacceptors.ptalk.api.BillNames;
 
 /**
- * Pyramid Technologies, Inc. 
+ * Pyramid Technologies, Inc.
  * Product: Pyramid API
- * Date: 14-07-2014 
+ * Date: 14-07-2014
  */
 
 /**
  * Raised when slave enters the Escrowed state<br>
  * {@link Events#Escrowed}
+ *
  * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
  */
 public class EscrowedEvent extends PTalkEvent {
@@ -35,13 +36,15 @@ public class EscrowedEvent extends PTalkEvent {
     private final BillNames billName;
 
     /**
-     * Creates a new event
+     * Creates a new escrw event. This event means that the bill is being held
+     * in escrow and is await the host for further instruction. In escrow mode,
+     * the master may send an acceptor or return message once this message is received.
+     * In non-escrow mode, this event will never be raised.
      *
      * @param source     origin the event
      * @param rawMessage Stringified packet that generated this event
      */
-    public EscrowedEvent(Object source, String rawMessage, BillNames billName)
-    {
+    public EscrowedEvent(Object source, String rawMessage, BillNames billName) {
         super(source, Events.Escrowed, rawMessage);
 
         this.billName = billName;
@@ -49,8 +52,11 @@ public class EscrowedEvent extends PTalkEvent {
 
     /**
      * Returns the BillName that is in escrow
+     *
      * @return BillNames name of bill that is in escrow
      */
-    public BillNames getBillName() { return this.billName; }
+    public BillNames getBillName() {
+        return this.billName;
+    }
 
 }
