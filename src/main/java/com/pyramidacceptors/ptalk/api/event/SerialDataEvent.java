@@ -4,7 +4,7 @@ import com.pyramidacceptors.ptalk.api.MessageType;
 
 /**
  * Created by cory on 4/7/2016.
- * <p/>
+ * <br>
  * This event encapsulates a packet being sent by this host (master)
  * or send my the target acceptor (slave)
  *

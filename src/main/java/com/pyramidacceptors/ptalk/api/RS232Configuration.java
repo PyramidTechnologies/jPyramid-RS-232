@@ -94,7 +94,7 @@ public enum RS232Configuration {
      * determines how many communication failures (e.g. non-responsive, IOExceptions, etc.)
      * before connection falilure events begin being emitted. The limit must be greater than
      * or equal to 0.
-     * <p/>
+     * <br>
      * Default: 5
      *
      * @param limit int
@@ -184,7 +184,7 @@ public enum RS232Configuration {
     /**
      * Enable or disable escrow mode on the slave device. This puts the host
      * in charge of giving the final accept/reject command.
-     * <p/>
+     * <br>
      * This feature is not correctly implemented so it has been disabled. It was originally
      * based off of a broken VB implementation which did not align with the specs.
      *

@@ -173,7 +173,7 @@ public class PyramidAcceptor implements ICommDevice, RS232EventListener {
     /**
      * Returns the 9-digit serial number of the target acceptor. This requires USA firmware 1.12
      * or newer. For other countries, please contact PTI.
-     * <p/>
+     * <br>
      * If no valid response is available or received, an empty string will be returned.
      *
      * @return String
