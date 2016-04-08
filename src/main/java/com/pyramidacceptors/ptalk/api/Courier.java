@@ -47,6 +47,7 @@ final class Courier extends Thread {
 
 
     private boolean _comOkay = true;
+    private int _failureCount = 0;
     
     // Socket to handle all data IO with slave
     private final RS232Socket socket;
@@ -211,7 +212,6 @@ final class Courier extends Thread {
                     handleNormalLoop();
                 }
 
-
                 // Wait for pollRate milliseconds before looping through again
                 sleep(RS232Configuration.INSTANCE.getPollrate());
 
@@ -221,6 +221,17 @@ final class Courier extends Thread {
             } catch (SerialPortTimeoutException ex1) {
                 logger.error("SendBytes timed out. ({} ms)", APIConstants.COMM_TIMEOUT);
                 _comOkay = false;
+            }
+
+
+            // Detect if there have been a number of sequential communication failures. Notify as needed.
+            if(!_comOkay){
+                if(_failureCount++ >= RS232Configuration.INSTANCE.getPollRetryLimit()) {
+                    fireChangeEvent(new ConnectionFailureEvent(this, _failureCount));
+                }
+            } else {
+                _failureCount = 0;
+                _comOkay = true;
             }
         }
 

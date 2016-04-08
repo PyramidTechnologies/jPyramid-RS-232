@@ -17,6 +17,8 @@
 
 package com.pyramidacceptors.ptalk.api;
 
+import com.pyramidacceptors.ptalk.api.event.Events;
+
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -34,16 +36,22 @@ public enum RS232Configuration {
      */
     INSTANCE;
 
-    private final int POLL_RATE_MAX = 5000;     // Set max to 5 seconds
+    private static final int POLL_RATE_MAX = 5000;     // Set max to 5 seconds
+
+    /**
+     * All flags except serial data event are enabled by default
+     */
+    public static final int DEFAULT_EVENT_MASK = 0xFFFE_FFFF;
 
     private boolean _ack = false;
     private final AtomicBoolean _escrowmode 
             = new AtomicBoolean(false);         // Set to false to disable escrow
     private int _edMask = 0x7F;                 // All bills enabled by default
     private int _edMask_bak = 0x7F;             // Backup mask in case user uses setEnabled(false)
-    private int _evMask = 0xFF;                 // All events enabled by default
+    private int _evMask = DEFAULT_EVENT_MASK;   // All events enabled by default
     private int _pollRate = 100;                // Default poll rate is milliseconds
-
+    private int _poll_retry_limit = 5;          // Limit to number of failures polling loop will allow before
+                                                // raising connection failure events
 
     /**
      * Returns the current poll rate is milliseconds. This is the rate at which
@@ -65,6 +73,34 @@ public enum RS232Configuration {
             return false;
 
         this._pollRate = pollrate;
+        return true;
+    }
+
+    /**
+     * Returns the number of retries the polling loop will allow
+     * before giving up and raising a connection failure events. Once this
+     * limit is reached, the polling thread will raise a connection failure event
+     * until either the polling loop is stopped or the target comes back online.
+     * @return int
+     */
+    public int getPollRetryLimit() {
+        return _poll_retry_limit;
+    }
+
+    /**
+     * Sets the polling retry limit for the polling loop. This limit
+     * determines how many communication failures (e.g. non-responsive, IOExceptions, etc.)
+     * before connection falilure events begin being emitted. The limit must be >= 0.
+     *
+     * Default: 5
+     *
+     * @param limit int
+     * @return boolean true of limit was applied successfully. False is limit is invalid.
+     */
+    public boolean setPollRetryLimit(int limit) {
+        if(limit < 0)
+            return false;
+        this._poll_retry_limit = limit;
         return true;
     }
 
