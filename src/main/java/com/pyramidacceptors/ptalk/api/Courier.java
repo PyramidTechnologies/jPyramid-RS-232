@@ -212,8 +212,8 @@ final class Courier extends Thread {
                     handleNormalLoop();
                 }
 
-                // Wait for pollRate milliseconds before looping through again
-                sleep(RS232Configuration.INSTANCE.getPollrate());
+                // If we made it this far, the loop has not stalled.
+                _comOkay = true;
 
             } catch (SerialPortException ex) {
                 logger.error(ex.getMessage());
@@ -231,8 +231,11 @@ final class Courier extends Thread {
                 }
             } else {
                 _failureCount = 0;
-                _comOkay = true;
             }
+
+
+            // Wait for pollRate milliseconds before looping through again
+            sleep(RS232Configuration.INSTANCE.getPollrate());
         }
 
         _isStopped.set(true);
