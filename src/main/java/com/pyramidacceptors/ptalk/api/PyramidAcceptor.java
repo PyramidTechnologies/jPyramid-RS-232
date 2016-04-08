@@ -298,10 +298,6 @@ public class PyramidAcceptor implements ICommDevice, RS232EventListener {
         Events event = evt.getId();
         int eventMask = RS232Configuration.INSTANCE.getEventMask();
 
-        // Don't clog the log with idle banter
-        if(event != Events.Idling && event != Events.SerialData)
-            logger.debug("Courier event: {}", event.name());
-
         // Filters out events that the client is not subscribed to
         if((event.getIntId() & eventMask) != event.getIntId()) {
             return;
