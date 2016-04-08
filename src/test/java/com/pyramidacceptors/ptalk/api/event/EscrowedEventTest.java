@@ -18,9 +18,9 @@ public class EscrowedEventTest {
     @Test
     public void testGetBillName() throws Exception {
 
-        EscrowedEvent event = new EscrowedEvent(this, "Testing", BillNames.Bill10);
+        EscrowedEvent event = new EscrowedEvent(this, "Testing", BillNames.Bill7);
 
-        assertThat(event.getBillName(), is(BillNames.Bill10));
+        assertThat(event.getBillName(), is(BillNames.Bill7));
 
         assertThat(event.getId(), is(Events.Escrowed));
     }
