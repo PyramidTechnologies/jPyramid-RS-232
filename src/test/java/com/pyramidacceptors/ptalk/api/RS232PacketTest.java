@@ -6,9 +6,10 @@ import org.junit.Test;
 
 import java.util.Random;
 
-import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.*;
+
 
 /**
  * Created by catix on 5/16/2015.
@@ -46,7 +47,7 @@ public class RS232PacketTest {
         assertThat(true, is(not(packet.isValid())));
 
         // Good!
-        bad = new byte[] { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x08 };
+        bad = new byte[] { 0x02, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x08 };
         packet = new RS232Packet(bad);
         assertThat(true, is(packet.isValid()));
     }

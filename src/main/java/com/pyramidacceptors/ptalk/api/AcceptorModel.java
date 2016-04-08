@@ -117,7 +117,7 @@ public class AcceptorModel {
         if (Arrays.asList(INVALID_MAKES).contains(model)) {
             return InvalidDevice;
         }
-        if (model >= 8 & model < MAKE_NAME_LOOKUP_TABLE.length) {
+        if (model < MAKE_NAME_LOOKUP_TABLE.length) {
             return MAKE_NAME_LOOKUP_TABLE[model];
         }
 

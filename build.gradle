@@ -125,9 +125,16 @@ repositories {
 }
 
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.11'
-    testCompile 'com.google.guava:guava:18.0'
-    testCompile 'org.mockito:mockito-all:2.0.2-beta'
+    testCompile (group: 'junit', name: 'junit', version: '4.+'){
+        exclude module : 'hamcrest'
+        exclude module : 'hamcrest-core'
+    }
+    testCompile 'org.hamcrest:hamcrest-library:1.2.1'
+    testCompile 'com.google.guava:guava:18.+'
+    testCompile ('org.mockito:mockito-all:2.0.2-beta') {
+        exclude module : 'hamcrest'
+        exclude module : 'hamcrest-core'
+    }
     compile 'org.scream3r:jssc:2.8.0'
     compile 'org.slf4j:slf4j-api:1.7.21'
 }
