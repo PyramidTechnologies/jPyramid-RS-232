@@ -43,6 +43,7 @@ public class EscrowedEvent extends PTalkEvent {
      *
      * @param source     origin the event
      * @param rawMessage Stringified packet that generated this event
+     * @param billName  Name of bill that is in escrow
      */
     public EscrowedEvent(Object source, String rawMessage, BillNames billName) {
         super(source, Events.Escrowed, rawMessage);

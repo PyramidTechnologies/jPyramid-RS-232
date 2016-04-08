@@ -20,6 +20,7 @@ public class SerialDataEvent extends PTalkEvent {
      * message as it has been been routed through the message loop.
      *
      * @param source     origin the event
+     * @param messageType Message direction
      * @param rawMessage Stringified packet that generated this event
      */
     public SerialDataEvent(Object source, MessageType messageType, String rawMessage) {

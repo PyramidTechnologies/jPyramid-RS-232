@@ -42,6 +42,7 @@ public class CreditEvent extends PTalkEvent {
      *
      * @param source     origin of the event
      * @param rawMessage Stringified packet that generated this event
+     * @param billName  Name of bill that has been stacked
      */
     public CreditEvent(Object source, String rawMessage, BillNames billName) {
         super(source, Events.Credit, rawMessage);
