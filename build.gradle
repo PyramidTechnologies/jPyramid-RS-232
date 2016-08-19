@@ -6,7 +6,7 @@ group='com.pyramidacceptors'
 archivesBaseName = "jPyramid-RS-232"
 
 sourceCompatibility = 1.7
-version = new Version(major: 1, minor: 2, revision: 5).toString()
+version = new Version(major: 1, minor: 2, revision: 6).toString()
 
 
 task version() {
