@@ -18,40 +18,45 @@
 package com.pyramidacceptors.ptalk.api.event;
 
 import com.pyramidacceptors.ptalk.api.BillNames;
-import java.util.EnumSet;
 
 /**
- * Pyramid Technologies, Inc. 
+ * Pyramid Technologies, Inc.
  * Product: Pyramid API
- * Date: 16-07-2014 
+ * Date: 16-07-2014
  */
 
 /**
  * Raised when slave raises a Credit event<br>
  * {@link Events#Credit}
+ *
  * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
  */
 public class CreditEvent extends PTalkEvent {
-    private static final long serialVersionUID = 1L;
+
+    private final BillNames billName;
 
     /**
-     * Raised when slave raises a Credit event
-     * @param source origin the event
-     * @param billName the name of the bill credited or invalid if non-credit event
-     * @param friendylyString parsed command code or additional information
-     * @param e EnumSet containing all events and the state of this PTalkEvent
-     */    
-    public CreditEvent(Object source, BillNames billName, 
-            String friendylyString, EnumSet<Events> e) {
-        super(source, billName, friendylyString, e);
-    }
-    
-    /**
-     * Construct a this derived event from its base event
-     * @param event PTalk parent event
+     * Creates a new credit event. This event means that the acceptor has validated
+     * and stacked the specified bill number. The bill cannot be returned once this
+     * event is generated.
+     *
+     * @param source     origin of the event
+     * @param rawMessage Stringified packet that generated this event
+     * @param billName  Name of bill that has been stacked
      */
-    public CreditEvent(PTalkEvent event) {
-        super(event.getSource(), event.getBillName(), 
-                event.getFriendlyString(), event.getEventId());
-    }    
+    public CreditEvent(Object source, String rawMessage, BillNames billName) {
+        super(source, Events.Credit, rawMessage);
+
+        this.billName = billName;
+    }
+
+    /**
+     * Returns the BillName that has been credited
+     *
+     * @return BillNames name of bill that has been credited
+     */
+    public BillNames getBillName() {
+        return this.billName;
+    }
+
 }

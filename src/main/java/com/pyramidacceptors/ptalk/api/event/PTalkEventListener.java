@@ -18,19 +18,21 @@
 package com.pyramidacceptors.ptalk.api.event;
 
 /**
- * Implementers of this interface wish to subscribe to all 
+ * Implementers of this interface wish to subscribe to all
  * {@link PTalkEvent}. PTalkEvents include all state changes
  * and events raised by a slave device.
  * <br>
+ *
+ * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
  * @see PTalkEvent
  * @see Events
- * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
  * @since 1.0.0.0
  */
 public interface PTalkEventListener {
     /**
      * Triggered when the event origin achieves an event
      * <br>
+     *
      * @param evt event to push to listeners
      */
     void changeEventReceived(PTalkEvent evt);

@@ -10,25 +10,16 @@ import static org.junit.Assert.*;
 public class AcceptorModelTest {
 
     @Test
-    public void testEqualsName() throws Exception {
-        assert(AcceptorModel.Apex7400.equalsName(AcceptorModel.Apex7400.toString()));
-        assert(AcceptorModel.Apex7600.equalsName(AcceptorModel.Apex7600.toString()));
-        assert(AcceptorModel.Spectra.equalsName(AcceptorModel.Spectra.toString()));
-        assert(AcceptorModel.Trilogy.equalsName(AcceptorModel.Trilogy.toString()));
-
-    }
-
-    @Test
     public void testFromByte() throws Exception {
-        assert(AcceptorModel.fromByte((byte)0) == AcceptorModel.NotConnected);
-        assert(AcceptorModel.fromByte((byte)1) == AcceptorModel.Unknown);
+        assert(AcceptorModel.fromByte((byte)0).equals(AcceptorModel.Apex52USA));
+        assert(AcceptorModel.fromByte((byte)1).equals(AcceptorModel.Apex54USA));
+        assert(AcceptorModel.fromByte((byte)2).equals(AcceptorModel.Apex56USA));
 
-        assert(AcceptorModel.fromByte((byte)2) == AcceptorModel.Trilogy);
-        assert(AcceptorModel.fromByte((byte)3) == AcceptorModel.Apex7400);
-        assert(AcceptorModel.fromByte((byte)4) == AcceptorModel.Apex7600);
-        assert(AcceptorModel.fromByte((byte)5) == AcceptorModel.Spectra);
+        assert(AcceptorModel.fromByte((byte)3).equals(AcceptorModel.Apex52FOR));
+        assert(AcceptorModel.fromByte((byte)4).equals(AcceptorModel.Apex54FOR));
+        assert(AcceptorModel.fromByte((byte)5).equals(AcceptorModel.Apex56FOR));
 
-        assert(AcceptorModel.fromByte((byte)10) == AcceptorModel.Unknown);
+        assert(AcceptorModel.fromByte((byte)100).equals( AcceptorModel.UnknownDevice));
 
     }
 }

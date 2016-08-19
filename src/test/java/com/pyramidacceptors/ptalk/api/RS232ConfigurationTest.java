@@ -11,12 +11,11 @@ public class RS232ConfigurationTest {
 
     @Test
     public void testGetEventMask() throws Exception {
-        assertThat(0xFF, is(RS232Configuration.INSTANCE.getEventMask()));
 
         RS232Configuration.INSTANCE.setEventMask(0x43);
         assertThat(0x43, is(RS232Configuration.INSTANCE.getEventMask()));
 
         // Set back to default
-        RS232Configuration.INSTANCE.setEventMask(0xFF);
+        RS232Configuration.INSTANCE.setEventMask(RS232Configuration.DEFAULT_EVENT_MASK);
     }
 }

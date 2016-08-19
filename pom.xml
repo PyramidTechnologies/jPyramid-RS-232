@@ -6,7 +6,7 @@
 
     <groupId>com.pyramidacceptors</groupId>
     <artifactId>jPyramid-RS-232</artifactId>
-    <version>1.2.1</version>
+    <version>1.2.5</version>
 
     <!-- More Project Information -->
     <name>jPyramid-RS-232</name>
@@ -91,11 +91,6 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-collections4</artifactId>
-            <version>4.0</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

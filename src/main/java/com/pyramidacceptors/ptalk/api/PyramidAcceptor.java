@@ -17,113 +17,109 @@
 
 package com.pyramidacceptors.ptalk.api;
 
-import static com.pyramidacceptors.ptalk.api.event.Events.*;
-import com.pyramidacceptors.ptalk.api.event.*;
-import java.util.EnumSet;
-import java.util.concurrent.CopyOnWriteArrayList;
+import com.pyramidacceptors.ptalk.api.event.Events;
+import com.pyramidacceptors.ptalk.api.event.PTalkEvent;
+import com.pyramidacceptors.ptalk.api.event.PTalkEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * The Pyramid Acceptor class is the realization of an {@code ICommDevice}.<br>
  * It uses a RS-232 socket by default.<br>
  * <br>
+ *
  * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
  * @since 1.0.0.0
  */
-public class PyramidAcceptor implements ICommDevice, PTalkEventListener {
+public class PyramidAcceptor implements ICommDevice, RS232EventListener {
     private final Logger logger = LoggerFactory.getLogger(PyramidAcceptor.class);
-
-    private Courier courier;
-    private final PyramidPort port;    
-    private final RS232Configuration config;
-    
+    private final PyramidPort port;
     // Use CopyOnWriteArrayList to avoid ConcurrentModificationExceptions if a
     // listener attempts to remove itself during event notification.
-    private final CopyOnWriteArrayList<PTalkEventListener> listeners 
+    private final CopyOnWriteArrayList<PTalkEventListener> listeners
             = new CopyOnWriteArrayList<>();
-    
-    
+    private Courier courier;
+
     /**
      * Create a new PyramidAcceptor
-     * 
-     * @param port
-     * @param config 
+     *
+     * @param port string port name
      */
-    private PyramidAcceptor(PyramidPort port, RS232Configuration config) {
-        this.port = port; 
-        this.config = config;
+    private PyramidAcceptor(PyramidPort port) {
+        this.port = port;
+        logger.info("Port created");
     }
 
     /**
      * Used only for testing
-     * @param config default RS-232 config is fine
      */
-    private PyramidAcceptor(RS232Configuration config) {
+    private PyramidAcceptor() {
         this.port = null;
-        this.config = config;
     }
-    
+
     /**
      * Instantiate a new Pyramid Acceptor with an existing port<br>
      * <br>
+     *
      * @param portName OS string name of the port this is connected to
      * @return New instance of PyramidAcceptor
      * @throws com.pyramidacceptors.ptalk.api.PyramidDeviceException thrown if underlying port
-     * cannot be opened.
+     *                                                               cannot be opened.
      */
     public static PyramidAcceptor valueOfRS232(String portName) throws PyramidDeviceException {
-        return new PyramidAcceptor(new PyramidPort.PortBuilder(portName).build(),
-        RS232Configuration.INSTANCE);
+        return new PyramidAcceptor(new PyramidPort.PortBuilder(portName).build());
     }
-    
+
     /**
      * Generate a new PyramidAcceptor with a custom port configuration. This
      * instance of PyramidPort will still use the standard RS-232 packet unless
      * otherwise specified.
-     * 
-     * @param config Configuration to use
+     *
+     * @param config   Configuration to use
      * @param portName OS name of port
      * @param baudRate integer baud rate
      * @param databits number of bits per unit of data
      * @param stopbits bits to indicate end of data
-     * @param parity type of parity
+     * @param parity   type of parity
      * @return new instance of PyramidAcceptor
      * @throws com.pyramidacceptors.ptalk.api.PyramidDeviceException thrown if underlying port
-     * cannot be opened.
+     *                                                               cannot be opened.
      */
     public static PyramidAcceptor valueOfRS232(RS232Configuration config, String portName, int baudRate,
-            int databits, int stopbits, int parity) throws PyramidDeviceException {
-            return new PyramidAcceptor(new PyramidPort.PortBuilder(portName)
-                    .baudRate(baudRate).dataBits(databits).stopBits(stopbits)
-                    .parity(parity).build(), config);
+                                               int databits, int stopbits, int parity) throws PyramidDeviceException {
+        return new PyramidAcceptor(new PyramidPort.PortBuilder(portName)
+                .baudRate(baudRate).dataBits(databits).stopBits(stopbits)
+                .parity(parity).build());
 
     }
-    
+
     /**
      * Attempt to autodetect the connected slave and use a default RS-232<br>
      * configuration.
+     *
      * @return a new instance of PyramidAcceptor
      * @throws com.pyramidacceptors.ptalk.api.PyramidDeviceException thrown if underlying port
-     * cannot be opened.
+     *                                                               cannot be opened.
      */
     public static PyramidAcceptor valueOfRS232() throws PyramidDeviceException {
         String portName = PortScanner.find();
-        if(!portName.equals("")){
-            return new PyramidAcceptor(new PyramidPort.PortBuilder(portName).build(),
-                RS232Configuration.INSTANCE);
+        if (!portName.equals("")) {
+            return new PyramidAcceptor(new PyramidPort.PortBuilder(portName).build());
         } else {
-            throw new PyramidDeviceException("Unable to autodetect device", 
+            throw new PyramidDeviceException("Unable to autodetect device",
                     "", "");
         }
     }
 
     /**
      * Returns an object that does not touch any serial ports.
+     *
      * @return PyramidAcceptor dummy instance (no physical port connection)
      */
     public static PyramidAcceptor asTest() {
-        return new PyramidAcceptor(RS232Configuration.INSTANCE);
+        return new PyramidAcceptor();
     }
 
 
@@ -133,6 +129,7 @@ public class PyramidAcceptor implements ICommDevice, PTalkEventListener {
      * messages have been received. This may occur during first power up. Also
      * note that this field is reported on every message so it is normal to check
      * back periodically until you have a valid firmware revision string
+     *
      * @return string
      */
     public String getFirmwareRevision() {
@@ -143,90 +140,130 @@ public class PyramidAcceptor implements ICommDevice, PTalkEventListener {
      * Returns the model of the target acceptor in the format This may AcceptorModel.Unknown
      * until the 1st valid slave message is received. Also note that this field is reported on
      * every message so it is normal to check back periodically until you have a valid acceptor model.
+     *
      * @return string
      */
-    public AcceptorModel getAcceptorModel() {
+    public String getAcceptorModel() {
         return courier.getAcceptorModel();
     }
 
-     /**
+    /**
+     * Request the slave to perform a power cycle. This will be sent in the
+     * next message loop so the delay may be up to the poll rate set in your RS-232
+     * configuration. The acceptor will take at least 500ms to become available once
+     * the reset has been performed.
+     *
+     * @since 1.2.4
+     */
+    public void requestReset() {
+        courier.requestReset();
+    }
+
+    /**
+     * Request the slave to report its serial number in the next message loop.
+     * Requires USA firmware 1.12 or newer. For foreign models, please contact
+     * PTI for more information.
+     *
+     * @since 1.2.5
+     */
+    public void requestSerialNumber() {
+        courier.requestSerialNumer();
+    }
+
+    /**
+     * Returns the 9-digit serial number of the target acceptor. This requires USA firmware 1.12
+     * or newer. For other countries, please contact PTI.
+     * <br>
+     * If no valid response is available or received, an empty string will be returned.
+     *
+     * @return String
+     */
+    public String getSerialNumber() {
+        // TODO parse this results
+        return courier.getSerialNumber();
+    }
+
+    /**
      * Subscribe to events generated by this instance<br>. To apply an<br>
      * event filter, please set the eventMask in the relevant IConfiguration<br>
      * implemenmation.
+     *
+     * @param l PTalkEventListener subscriber object
      * @see com.pyramidacceptors.ptalk.api.RS232Configuration
      * @see com.pyramidacceptors.ptalk.api.RS232Configuration
      * <br>
-     * @param l PTalkEventListener subscriber object
      */
     public void addChangeListener(PTalkEventListener l) {
-      this.listeners.add(l);
+        this.listeners.add(l);
     }
 
     /**
      * Unsubscribe to events generated by this instance<br>. To apply an <br>
      * event filter, please set the eventMask in the relevant IConfiguration<br>
      * implemenmation.
+     *
+     * @param l PTalkEventListener
      * @see com.pyramidacceptors.ptalk.api.RS232Configuration
      * @see com.pyramidacceptors.ptalk.api.RS232Configuration
-    * <br>
-    * @param l PTalkEventListener
-    */    
+     * <br>
+     */
     public void removeChangeListener(PTalkEventListener l) {
-      this.listeners.remove(l);
-    }   
-    
+        this.listeners.remove(l);
+    }
+
     private void fireChangeEvent(PTalkEvent e) {
-        for(PTalkEventListener l : listeners) {
+        for (PTalkEventListener l : listeners) {
             l.changeEventReceived(e);
         }
     }
-    
+
     @Override
-    public void connect() {             
+    public void connect() {
         try {
-            
+
             // If port is already open or can be opened successfully,
             // create a new courier and start polling
-            if(port.isOpen() || port.openPort()) {
-                
+            if (port.isOpen() || port.openPort()) {
+
                 courier = new Courier(port, new RS232Socket());
                 courier.addChangeListener(this);
                 courier.start();
+
                 logger.info("Connected to device on port {}",
                         port.getPortName());
-            
+
             } else {
 
                 logger.error("Failed to connect device on port {}",
                         port.getPortName());
             }
-            
-        }catch(PyramidDeviceException ex) {
+
+        } catch (PyramidDeviceException ex) {
             logger.error("Failed to connect: {}", ex);
         }
     }
 
     @Override
-    public void disconnect() {      
-       
+    public void disconnect() {
+
         try {
             // Stop the message courier
-            if(courier != null) {
+            if (courier != null) {
                 courier.stopThread();
                 courier.removeChangeListener(this);
             }
-            
+
             // And then see if we can close the port...
-            if(port.closePort()) {
+            if (port.closePort()) {
                 logger.info("Disconnect device from port {}",
                         port.getPortName());
-            
+
             } else {
                 logger.error("Failed to disconnect device on port {}",
                         port.getPortName());
             }
-            
-        } catch(PyramidDeviceException ex) {
+
+        } catch (PyramidDeviceException ex) {
             logger.error("Failed to disconnect: {}", ex);
         }
     }
@@ -235,10 +272,15 @@ public class PyramidAcceptor implements ICommDevice, PTalkEventListener {
     public int getPollRate() {
         return RS232Configuration.INSTANCE.getPollrate();
     }
-    
+
     @Override
     public boolean setPollRate(int rate) {
-        return RS232Configuration.INSTANCE.setPollrate(rate);
+        boolean result = RS232Configuration.INSTANCE.setPollrate(rate);
+        if (result)
+            logger.debug("Poll rate set to: {}", rate);
+        else
+            logger.debug("Failed to set poll rate to: {}", rate);
+        return result;
     }
 
     @Override
@@ -251,85 +293,27 @@ public class PyramidAcceptor implements ICommDevice, PTalkEventListener {
         return port.getPortName();
     }
 
+    public void pause() {
+        courier.pause(true);
+        logger.debug("Acceptor un paused");
+    }
+
+    public void unpause() {
+        courier.pause(false);
+        logger.debug("Acceptor paused");
+    }
+
     @Override
     public void changeEventReceived(PTalkEvent evt) {
-        
-        // TODO implement event filter
-        
-        EnumSet<Events> event = evt.getEventId();
-        int eventMask = RS232Configuration.INSTANCE.getEventMask();
-        
-        // States - only one state allowed at a time so save
-        if(event.contains(Idling) && 
-                ((Idling.getIntId()& eventMask) == Idling.getIntId())) {
-            fireChangeEvent(new IdlingEvent(evt));
-        }
-        if(event.contains(Accepting) && 
-                ((Accepting.getIntId()& eventMask) == Accepting.getIntId())) {
-            fireChangeEvent(new AcceptingEvent(evt));
-        }
-        if(event.contains(Escrowed) && 
-                ((Escrowed.getIntId()& eventMask) == Escrowed.getIntId())) {
-            fireChangeEvent(new EscrowedEvent(evt));
-        }
-        if(event.contains(Stacking) && 
-                ((Stacking.getIntId()& eventMask) == Stacking.getIntId())) {
-            fireChangeEvent(new StackingEvent(evt));
-        }        
-        if(event.contains(Returning) && 
-                ((Returning.getIntId()& eventMask) == Returning.getIntId())) {
-            fireChangeEvent(new ReturningEvent(evt));
-        }                
-        if(event.contains(Stacked) && 
-                ((Stacked.getIntId()& eventMask) == Stacked.getIntId())) {
-            fireChangeEvent(new StackedEvent(evt));
-        }
-        if(event.contains(BillJammed) && 
-                ((BillJammed.getIntId()& eventMask) == BillJammed.getIntId())) {
-            fireChangeEvent(new BillJammedEvent(evt));
-        }        
-        if(event.contains(StackerFull) && 
-                ((StackerFull.getIntId()& eventMask) == StackerFull.getIntId())) {
-            fireChangeEvent(new StackerFullEvent(evt));
-        } 
-        
-        // Events - there can be multiple so check them all
-        if(event.contains(Returned) && 
-                ((Returned.getIntId()& eventMask) == Returned.getIntId())) {
-            fireChangeEvent(new ReturnedEvent(evt));
-        }
-        if(event.contains(Cheated) && 
-                ((Cheated.getIntId()& eventMask) == Cheated.getIntId())) {
-            fireChangeEvent(new CheatedEvent(evt));
-        }
-        if(event.contains(BillRejected) && 
-                ((BillRejected.getIntId()& eventMask) == BillRejected.getIntId())) {
-            fireChangeEvent(new BillRejectedEvent(evt));
-        } 
-        if(event.contains(BillCasetteRemoved) && 
-                ((BillCasetteRemoved.getIntId()& eventMask) == BillCasetteRemoved.getIntId())) {
-            fireChangeEvent(new CasseteMissingEvent(evt));
-        }  
-        if(event.contains(Failure) && 
-                ((Failure.getIntId()& eventMask) == Failure.getIntId())) {
-            fireChangeEvent(new FailureEvent(evt));
-        }  
-        if(event.contains(InvalidCommand) && 
-                ((InvalidCommand.getIntId()& eventMask) == InvalidCommand.getIntId())) {
-            fireChangeEvent(new InvalidMessageEvent(evt));
-        }          
-        if(event.contains(PowerUp) && 
-                ((PowerUp.getIntId()& eventMask) == PowerUp.getIntId())) {
-            fireChangeEvent(new PowerUpEvent(evt));
-        }          
-        if(event.contains(Credit) && 
-                ((Credit.getIntId()& eventMask) == Credit.getIntId())) {
-            fireChangeEvent(new CreditEvent(evt));
-        }          
 
-        // If we caught a generic event or something that we couldn't parse
-        if(event.contains(Generic) || event.isEmpty() && ((Generic.getIntId()& eventMask) == Generic.getIntId())) {
-                fireChangeEvent(evt);                
+        Events event = evt.getId();
+        int eventMask = RS232Configuration.INSTANCE.getEventMask();
+
+        // Filters out events that the client is not subscribed to
+        if ((event.getIntId() & eventMask) != event.getIntId()) {
+            return;
         }
+        // Otherwise, raise a normal event
+        fireChangeEvent(evt);
     }
 }

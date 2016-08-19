@@ -18,40 +18,46 @@
 package com.pyramidacceptors.ptalk.api.event;
 
 import com.pyramidacceptors.ptalk.api.BillNames;
-import java.util.EnumSet;
 
 /**
- * Pyramid Technologies, Inc. 
+ * Pyramid Technologies, Inc.
  * Product: Pyramid API
- * Date: 14-07-2014 
+ * Date: 14-07-2014
  */
 
 /**
  * Raised when slave enters the Escrowed state<br>
  * {@link Events#Escrowed}
+ *
  * @author <a href="mailto:cory@pyramidacceptors.com">Cory Todd</a>
  */
-public class EscrowedEvent extends PTalkEvent {    
-    private static final long serialVersionUID = 1L;
+public class EscrowedEvent extends PTalkEvent {
+
+    private final BillNames billName;
 
     /**
-     * Raised when slave enters the Escrowed state
-     * @param source origin the event
-     * @param billName the name of the bill credited or invalid if non-credit event
-     * @param friendylyString parsed command code or additional information
-     * @param e EnumSet containing all events and the state of this PTalkEvent
+     * Creates a new escrw event. This event means that the bill is being held
+     * in escrow and is await the host for further instruction. In escrow mode,
+     * the master may send an acceptor or return message once this message is received.
+     * In non-escrow mode, this event will never be raised.
+     *
+     * @param source     origin the event
+     * @param rawMessage Stringified packet that generated this event
+     * @param billName  Name of bill that is in escrow
      */
-    public EscrowedEvent(Object source, BillNames billName, 
-            String friendylyString, EnumSet<Events> e) {
-        super(source, billName, friendylyString, e);
+    public EscrowedEvent(Object source, String rawMessage, BillNames billName) {
+        super(source, Events.Escrowed, rawMessage);
+
+        this.billName = billName;
     }
 
     /**
-     * Construct a this derived event from its base event
-     * @param event PTalk parent event
+     * Returns the BillName that is in escrow
+     *
+     * @return BillNames name of bill that is in escrow
      */
-    public EscrowedEvent(PTalkEvent event) {
-        super(event.getSource(), event.getBillName(), 
-                event.getFriendlyString(), event.getEventId());
+    public BillNames getBillName() {
+        return this.billName;
     }
+
 }
