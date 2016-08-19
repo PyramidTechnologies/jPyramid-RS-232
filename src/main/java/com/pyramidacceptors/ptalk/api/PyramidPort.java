@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
  * @see jssc.SerialPort
  * @since 1.0.0.0
  */
-final class PyramidPort {
+public final class PyramidPort {
 
     public static final int PURGE_RXCLEAR = SerialPort.PURGE_RXCLEAR;
     public static final int PURGE_TXCLEAR = SerialPort.PURGE_RXCLEAR;
