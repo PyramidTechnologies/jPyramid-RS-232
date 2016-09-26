@@ -296,8 +296,13 @@ final class Courier extends Thread {
 
         byte[] resp = writeWrapper(command);
 
-
         byte[] sn = new byte[5];
+
+        if(resp.length < (sn.length + 3)) {
+            logger.warn("Invalid serial number response::%s", Utilities.bytesToString(resp));
+            return;
+        }
+
         System.arraycopy(resp, 3, sn, 0, sn.length);
 
         // Since the serial number is 9 digits in length, we encode as 4 BCD values
@@ -335,14 +340,21 @@ final class Courier extends Thread {
         // Notify that we've received a response
         fireChangeEvent(SerialDataEvent.newRxEvent(this, Utilities.bytesToString(resp)));
 
-        if (!RS232Packet.isValid(resp))
+        if (!RS232Packet.isValid(resp)) {
             port.flush();
+            logger.debug("Invalid data received, flushed port and ignoring data::%s", Utilities.bytesToString(resp));
+            resp = new byte[0];
+        }
 
         return resp;
 
     }
 
     private void handleEvents(byte[] resp) {
+
+        if(resp == null || resp.length == 0) {
+            return;
+        }
 
         RS232Packet respPacket = socket.parseResponse(resp);
 
