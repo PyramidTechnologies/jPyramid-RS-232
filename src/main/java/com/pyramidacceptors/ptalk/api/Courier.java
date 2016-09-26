@@ -188,11 +188,11 @@ final class Courier extends Thread {
      */
     protected void stopThread() {
         this._stopThread.set(true);
-        logger.debug("Stopping courier thread...");
+        logger.info("Stopping courier thread...");
         while (this._isStopped.get()) {
             sleep(5);
         }
-        logger.debug("Courier thread stopped");
+        logger.info("Courier thread stopped");
     }
 
     /**
@@ -267,7 +267,7 @@ final class Courier extends Thread {
     private void handleResetRequest() throws SerialPortException, SerialPortTimeoutException {
 
 
-        logger.debug("Reset request command being generated");
+        logger.info("Reset request command being generated");
 
         // Clear flag before we touch the serial port in case the slave does not
         // support the request
@@ -281,12 +281,12 @@ final class Courier extends Thread {
 
         sleep(500);
         port.openPort();
-        logger.debug("Acceptor reset performed");
+        logger.info("Acceptor reset performed");
     }
 
     private void handleSerialNumberRequest() throws SerialPortException, SerialPortTimeoutException {
 
-        logger.debug("Serial number command being generated");
+        logger.info("Serial number command being generated");
 
         // Clear flag before we touch the serial port in case the slave does not
         // support the request
@@ -299,7 +299,7 @@ final class Courier extends Thread {
         byte[] sn = new byte[5];
 
         if(resp.length < (sn.length + 3)) {
-            logger.warn("Invalid serial number response::%s", Utilities.bytesToString(resp));
+            logger.warn("Invalid serial number response::{}", Utilities.bytesToString(resp));
             return;
         }
 
@@ -316,7 +316,7 @@ final class Courier extends Thread {
         }
 
         rawSerialNumber = sb.toString();
-        logger.debug("Serial number response parsed");
+        logger.info("Serial number response parsed::{}", rawSerialNumber);
     }
 
     /**
@@ -337,12 +337,15 @@ final class Courier extends Thread {
         // Collect the response
         byte[] resp = port.readBytes(socket.getMaxPacketRespSize());
 
+        logger.debug("<<{}", Utilities.bytesToString(command));
+        logger.debug(">>{}", Utilities.bytesToString(resp));
+
         // Notify that we've received a response
         fireChangeEvent(SerialDataEvent.newRxEvent(this, Utilities.bytesToString(resp)));
 
         if (!RS232Packet.isValid(resp)) {
             port.flush();
-            logger.debug("Invalid data received, flushed port and ignoring data::%s", Utilities.bytesToString(resp));
+            logger.warn("Invalid data received, flushed port and ignoring data::%s", Utilities.bytesToString(resp));
             resp = new byte[0];
         }
 
@@ -361,6 +364,7 @@ final class Courier extends Thread {
         creditAction = respPacket.getCreditAction();
         rawFirmwareRevision = respPacket.getFirmwareRevision();
         rawAcceptorModel = respPacket.getAcceptorModel();
+
 
         PTalkEvent e;
         for (Events type : respPacket.getInterpretedEvents()) {
