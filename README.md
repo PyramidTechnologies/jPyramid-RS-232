@@ -9,6 +9,10 @@ into their system. Get up and running quickly without having to worry about the 
 ## Important
 If you are using an Apex 7000 or Spectra, please make sure that all of your dip switches are in the off position. The unit msust be in RS-232 mode to use this library. For more information about configuration, please see our [faq](http://pyramidacceptors.com/support/faq/).
 
+## Anroid
+
+This does not support Android. The native library that handles the serial port does not support Android. We do not plan on adding this feature at anytime in the future.
+
 ## Java Pyramid Device API
 
 * Cross-platform, RS-232 Bill Validator API
