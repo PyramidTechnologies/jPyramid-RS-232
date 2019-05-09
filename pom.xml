@@ -6,7 +6,7 @@
 
     <groupId>com.pyramidacceptors</groupId>
     <artifactId>jPyramid-RS-232</artifactId>
-    <version>1.2.7</version>
+    <version>1.3.0</version>
 
     <!-- More Project Information -->
     <name>jPyramid-RS-232</name>
@@ -21,8 +21,8 @@
     </scm>
     <licenses>
         <license>
-            <name>GNU General Public License</name>
-            <url>http://www.gnu.org/licenses/</url>
+            <name>MIT License</name>
+            <url>https://pti.mit-license.org/</url>
             <distribution>repo</distribution>
         </license>
     </licenses>

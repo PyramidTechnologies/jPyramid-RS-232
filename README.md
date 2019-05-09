@@ -39,13 +39,13 @@ This does not support Android. The native library that handles the serial port d
 
 ### Troubleshooting
 
-On Linux, we've heard of some folks having trouble using the auto-detect port and getPortList fuctions. For reason's we have yet to identify, this appears to be resolved by running you app from terminal with the -jar switch.
+On Linux, we've heard of some folks having trouble using the auto-detect port and getPortList functions. For reason's we have yet to identify, this appears to be resolved by running you app from terminal with the -jar switch.
 
     java -jar your_app.jar
 
 ### License ###
 
-[This library is available under GNU General Public Use, V2](http://www.gnu.org/licenses/gpl-2.0.html)
+[This library is available under the MIT License](https://pti.mit-license.org/)
 
 ### Contribution guidelines ###
 

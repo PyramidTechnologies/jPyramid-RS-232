@@ -6,7 +6,7 @@ group='com.pyramidacceptors'
 archivesBaseName = "jPyramid-RS-232"
 
 sourceCompatibility = 1.7
-version = new Version(major: 1, minor: 2, revision: 7).toString()
+version = new Version(major: 1, minor: 3, revision: 0).toString()
 
 
 task version() {
@@ -91,8 +91,8 @@ uploadArchives {
 
                 licenses {
                     license {
-                        name 'GNU General Public License'
-                        url 'http://www.gnu.org/license'
+                        name 'MIT License'
+                        url 'https://pti.mit-license.org/'
                         distribution 'repo'
                     }
                 }
