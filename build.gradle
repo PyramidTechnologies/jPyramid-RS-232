@@ -130,7 +130,7 @@ dependencies {
         exclude module : 'hamcrest-core'
     }
     testCompile 'org.hamcrest:hamcrest-library:1.2.1'
-    testCompile 'com.google.guava:guava:18.0'
+    testCompile 'com.google.guava:guava:24.1.1-jre'
     testCompile ('org.mockito:mockito-all:2.0.2-beta') {
         exclude module : 'hamcrest'
         exclude module : 'hamcrest-core'
